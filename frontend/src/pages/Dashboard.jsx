@@ -14,7 +14,9 @@ import { formatPrice, formatDistance, formatRating } from '../utils/formatters';
 import { RADIUS_OPTIONS } from '../utils/constants';
 
 export default function Dashboard() {
-  const { latitude, longitude, loading: locationLoading } = useLocationCtx();
+  const { location, loading: locationLoading, getCurrentLocation } = useLocationCtx();
+  const latitude = location?.lat;
+  const longitude = location?.lng;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -184,15 +186,25 @@ export default function Dashboard() {
       </div>
 
       {/* Location info */}
-      <div className="flex items-center gap-2 mb-4 text-sm text-gray-500 dark:text-gray-400">
-        <Navigation className="w-4 h-4 text-blue-500" />
-        <span>
-          {locationLoading
-            ? 'Getting your location...'
-            : latitude
-            ? `Showing services within ${radius}km of your location`
-            : 'Using default location (Pune). Enable location for better results.'}
-        </span>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <Navigation className="w-4 h-4 text-blue-500" />
+          <span>
+            {locationLoading
+              ? 'Getting your location...'
+              : latitude
+              ? `Showing services within ${radius}km of your location`
+              : 'Using default location (Pune). Enable location for better results.'}
+          </span>
+        </div>
+        {!latitude && !locationLoading && (
+          <button 
+            onClick={getCurrentLocation}
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Detect My Location
+          </button>
+        )}
       </div>
 
       {/* Services Grid */}

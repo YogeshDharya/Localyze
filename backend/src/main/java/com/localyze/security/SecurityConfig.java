@@ -38,8 +38,10 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						// Public endpoints
-						.requestMatchers("/api/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/api/services/**")
-						.permitAll().requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/services/my").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/reviews/service/**").permitAll()
 						// Admin endpoints
 						.requestMatchers("/api/admin/**").hasRole("ADMIN")

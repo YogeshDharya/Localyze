@@ -13,14 +13,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     adminService.getStats()
       .then(res => setStats(res.data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="flex justify-center py-20"><Spinner size="xl" /></div>;
 
   const statCards = [
-    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'from-red-500 to-cyan-500' },
     { label: 'Total Sellers', value: stats.totalSellers, icon: Users, color: 'from-indigo-500 to-blue-500' },
     { label: 'Total Services', value: stats.totalServices, icon: Package, color: 'from-purple-500 to-pink-500' },
     { label: 'Active Services', value: stats.activeServices, icon: Package, color: 'from-emerald-500 to-teal-500' },

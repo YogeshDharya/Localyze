@@ -14,6 +14,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Page<Booking> findBySellerId(Long sellerId, Pageable pageable);
 
+    Page<Booking> findBySellerIdAndStatus(Long sellerId, BookingStatus status, Pageable pageable);
+
     Page<Booking> findByUserIdAndStatus(Long userId, BookingStatus status, Pageable pageable);
 
     boolean existsByUserIdAndServiceIdAndStatusNot(Long userId, Long serviceId, BookingStatus status);

@@ -1,17 +1,17 @@
 import api from './api';
 
 const bookingService = {
-  createBooking: (data) => api.post('/bookings', data),
+  create: (data) => api.post('/bookings', data),
 
   getMyBookings: (params = {}) => api.get('/bookings/my', { params }),
 
   getSellerBookings: (params = {}) => api.get('/bookings/seller', { params }),
 
-  getBookingById: (id) => api.get(`/bookings/${id}`),
+  getById: (id) => api.get(`/bookings/${id}`),
 
-  updateBookingStatus: (id, status) => api.put(`/bookings/${id}/status`, { status }),
+  updateStatus: (id, data) => api.put(`/bookings/${id}/status`, data),
 
-  cancelBooking: (id, reason) => api.put(`/bookings/${id}/cancel`, { reason }),
+  cancel: (id, data) => api.put(`/bookings/${id}/cancel`, data),
 };
 
 export default bookingService;

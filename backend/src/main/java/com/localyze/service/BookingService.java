@@ -80,6 +80,7 @@ public class BookingService {
      * @param size      page size
      * @return paginated booking responses
      */
+    @Transactional(readOnly = true)
     public PagedResponse<BookingResponse> getUserBookings(String userEmail, String status, int page, int size) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
@@ -87,7 +88,7 @@ public class BookingService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Booking> bookingPage;
 
-        if (status != null && !status.isBlank()) {
+        if (status != null && !status.isBlank() && !status.equalsIgnoreCase("ALL")) {
             bookingPage = bookingRepository.findByUserIdAndStatus(
                     user.getId(), BookingStatus.valueOf(status.toUpperCase()), pageable);
         } else {
@@ -106,12 +107,19 @@ public class BookingService {
      * @param size        page size
      * @return paginated booking responses
      */
+    @Transactional(readOnly = true)
     public PagedResponse<BookingResponse> getSellerBookings(String sellerEmail, String status, int page, int size) {
         User seller = userRepository.findByEmail(sellerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", sellerEmail));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Booking> bookingPage = bookingRepository.findBySellerId(seller.getId(), pageable);
+        Page<Booking> bookingPage;
+
+        if (status != null && !status.isBlank() && !status.equalsIgnoreCase("ALL")) {
+            bookingPage = bookingRepository.findBySellerIdAndStatus(seller.getId(), BookingStatus.valueOf(status.toUpperCase()), pageable);
+        } else {
+            bookingPage = bookingRepository.findBySellerId(seller.getId(), pageable);
+        }
 
         return buildPagedResponse(bookingPage);
     }
@@ -125,6 +133,7 @@ public class BookingService {
      * @throws UnauthorizedException     if the user has no access to this booking
      * @throws ResourceNotFoundException if the booking does not exist
      */
+    @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id, String userEmail) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));

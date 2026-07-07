@@ -3,15 +3,15 @@ import api from './api';
 const serviceService = {
   getAll: (params = {}) => api.get('/services', { params }),
 
-  getNearbyServices: (params = {}) => api.get('/services/nearby', { params }),
+  getNearby: (params = {}) => api.get('/services/nearby', { params }),
 
-  getServiceById: (id) => api.get(`/services/${id}`),
+  getById: (id) => api.get(`/services/${id}`),
 
-  createService: (data) => api.post('/services', data),
+  create: (data) => api.post('/services', data),
 
-  updateService: (id, data) => api.put(`/services/${id}`, data),
+  update: (id, data) => api.put(`/services/${id}`, data),
 
-  deleteService: (id) => api.delete(`/services/${id}`),
+  delete: (id) => api.delete(`/services/${id}`),
 
   getMyServices: (params = {}) => api.get('/services/my', { params }),
 

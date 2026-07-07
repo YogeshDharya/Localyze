@@ -23,7 +23,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {

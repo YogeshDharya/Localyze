@@ -16,6 +16,7 @@ export default function AddService() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
   const [form, setForm] = useState({
     title: '', description: '', categoryId: '', price: '', priceUnit: 'fixed',
     address: '', latitude: latitude || '', longitude: longitude || '', availability: '',
@@ -40,6 +41,30 @@ export default function AddService() {
       showToast.success('Images uploaded!');
     } catch { showToast.error('Upload failed'); }
     finally { setUploading(false); }
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      showToast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm(prev => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }));
+        showToast.success("Location updated!");
+        setGettingLocation(false);
+      },
+      (error) => {
+        showToast.error("Unable to retrieve your location. Please check permissions.");
+        setGettingLocation(false);
+      },
+      { enableHighAccuracy: true }
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -108,9 +133,19 @@ export default function AddService() {
         <Input label="Address *" name="address" placeholder="Your business address"
           value={form.address} onChange={handleChange} />
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input label="Latitude" name="latitude" type="number" step="any" value={form.latitude} onChange={handleChange} />
-          <Input label="Longitude" name="longitude" type="number" step="any" value={form.longitude} onChange={handleChange} />
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-4">
+            <Input label="Latitude" name="latitude" type="number" step="any" value={form.latitude} onChange={handleChange} />
+            <Input label="Longitude" name="longitude" type="number" step="any" value={form.longitude} onChange={handleChange} />
+          </div>
+          <button 
+            type="button" 
+            onClick={handleGetLocation} 
+            disabled={gettingLocation}
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+          >
+            {gettingLocation ? 'Getting location...' : 'Use Current Location'}
+          </button>
         </div>
 
         {/* Image upload */}

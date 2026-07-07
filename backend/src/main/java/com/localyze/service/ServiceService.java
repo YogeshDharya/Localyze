@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
@@ -325,6 +326,7 @@ public class ServiceService {
      * @return paginated service responses
      */
     public PagedResponse<ServiceResponse> getMyServices(String sellerEmail, int page, int size) {
+    		System.out.println(sellerEmail);
         User seller = userRepository.findByEmail(sellerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", sellerEmail));
 

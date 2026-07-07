@@ -22,6 +22,7 @@ public class ServiceController {
 
     private final ServiceService serviceService;
 
+
     @GetMapping
     public ResponseEntity<PagedResponse<ServiceResponse>> getServices(
             @RequestParam(required = false) Long categoryId,
@@ -86,9 +87,12 @@ public class ServiceController {
     @GetMapping("/my")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<PagedResponse<ServiceResponse>> getMyServices(
+    		
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
+    	
+    		System.out.println("services/my reached");
         return ResponseEntity.ok(serviceService.getMyServices(userDetails.getUsername(), page, size));
     }
 
@@ -99,4 +103,5 @@ public class ServiceController {
             @RequestParam(defaultValue = "12") int size) {
         return ResponseEntity.ok(serviceService.getSellerServices(sellerId, page, size));
     }
+
 }

@@ -1,7 +1,7 @@
 import api from './api';
 
 const reviewService = {
-  getServiceReviews: (serviceId, params = {}) =>
+  getByService: (serviceId, params = {}) =>
     api.get(`/reviews/service/${serviceId}`, { params }),
 
   createReview: (data) => api.post('/reviews', data),
