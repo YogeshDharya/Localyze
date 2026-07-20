@@ -10,8 +10,6 @@
 		<relativePath />
 	</parent>
 
-
-
 	<groupId>com.localyze</groupId>
 	<artifactId>localyze-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -96,6 +94,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
