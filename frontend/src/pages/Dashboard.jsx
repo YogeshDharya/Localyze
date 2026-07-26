@@ -12,7 +12,7 @@ import StarRating from '../components/ui/StarRating';
 import { useDebounce } from '../hooks/useDebounce';
 import { formatPrice, formatDistance, formatRating } from '../utils/formatters';
 import { RADIUS_OPTIONS } from '../utils/constants';
-
+import AdvancedMap from '../AdvancedMap';
 export default function Dashboard() {
   const { location, loading: locationLoading, getCurrentLocation } = useLocationCtx();
   const latitude = location?.lat;
@@ -197,6 +197,7 @@ export default function Dashboard() {
               : 'Using default location (Pune). Enable location for better results.'}
           </span>
         </div>
+
         {!latitude && !locationLoading && (
           <button 
             onClick={getCurrentLocation}
@@ -206,6 +207,9 @@ export default function Dashboard() {
           </button>
         )}
       </div>
+        <div className="border-spacing-7 border-orange-500 h-100">
+          <AdvancedMap />
+        </div>
 
       {/* Services Grid */}
       {loading ? (
