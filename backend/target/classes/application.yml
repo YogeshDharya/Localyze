@@ -9,8 +9,8 @@ spring:
     # Database Configuration
     datasource:
         url: jdbc:mysql://localhost:3306/localyze?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-        username: root
-        password: root
+        username: newuser2
+        password: Yogesh%5000
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     # JPA / Hibernate
@@ -28,8 +28,8 @@ spring:
     mail:
         host: smtp.gmail.com
         port: 587
-        username: careercatastrophe@gmail.com
-        password: 
+        username: aman.raibole.dev@gmail.com
+        password: nmeeszkrlaoafpzy
         properties:
             mail:
                 smtp:
@@ -46,7 +46,7 @@ spring:
 
 # JWT Configuration
 jwt:
-    secret: [your-jwt-secret]
+    secret: ${JWT_SECRET:dGhpcyBpcyBhIHZlcnkgc2VjdXJlIGtleSBmb3IgbG9jYWx5emUgand0IHRva2VuIGdlbmVyYXRpb24gMjAyNA==}
     access-token-expiry: 900000 # 15 minutes in ms
     refresh-token-expiry: 604800000 # 7 days in ms
 
@@ -58,5 +58,5 @@ cloudinary:
 
 # Razorpay Configuration
 razorpay:
-    key-id: [razorpay-key-id]
-    key-secret: [razorpay-key-secret]
+    key-id: rzp_test_T6IweRxRewEjzh
+    key-secret: 6PcjN78QbeqtaFxZBjSYffqh
