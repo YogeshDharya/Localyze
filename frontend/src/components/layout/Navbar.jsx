@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import logo from '../../assets/logo.png';
+
 import {
   Menu, X, Sun, Moon, MapPin, Bell, User, LogOut,
   LayoutDashboard, Package, Calendar, Settings, Shield,
@@ -45,16 +47,19 @@ export default function Navbar() {
     : [];
 
   return (
-    <nav className="sticky top-0 z-40 glass border-b border-white/20 dark:border-slate-700/50">
+    <nav className="sticky top-0 z-[9999] glass border-b border-white/20 dark:border-slate-700/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            {/* <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
               <MapPin className="w-5 h-5 text-white" />
+            </div> */}
+            <div>
+              <img src={logo} alt="Localyze Logo" className="w-9 h-9 rounded-xl object-cover group-hover:scale-110 transition-transform" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Localyze
+              Local<span className="text-gray-400 dark:text-white">yze</span>
             </span>
           </Link>
 
