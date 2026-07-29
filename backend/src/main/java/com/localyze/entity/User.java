@@ -112,4 +112,10 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isVerified && isActive;
     }
+
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
