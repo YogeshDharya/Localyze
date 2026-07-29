@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { renderToString } from 'react-dom/server';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -60,12 +60,30 @@ function MapClickHandler({ setCoordinates }) {
   return null; // This component doesn't render visual elements, it only listens to events
 }
 
-export default function AdvancedMap() {
+function RecenterMap({ center }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      map.setView(center);
+    }
+  }, [center, map]);
+
+  return null;
+}
+
+export default function AdvancedMap({ latitude, longitude, radius = 2, services = [] }) {
   // Use React state to store and dynamically update the pin's coordinates
-  const [coordinates, setCoordinates] = useState([18.537026, 73.806788]); 
+  const [coordinates, setCoordinates] = useState([latitude || 18.537026, longitude || 73.806788]);
+
+  useEffect(() => {
+    if (latitude != null && longitude != null) {
+      setCoordinates([latitude, longitude]);
+    }
+  }, [latitude, longitude]);
 
   return (
-    <div style={{ height: '500px', width: '100%' }} className="border-spacing-7 rounded-xl border-orange-500">
+    <div style={{ height: '500px', width: '100%' }} className="relative border-spacing-7 rounded-xl border-orange-500">
       {/* Display coordinates outside the map to verify it updates */}
       {/* <div style={{ padding: '10px', background: '#f5f5f5', fontWeight: 'bold' }}>
         Current Pin Coordinates: {coordinates[0].toFixed(6)}, {coordinates[1].toFixed(6)}
@@ -81,12 +99,12 @@ export default function AdvancedMap() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {/* Wire up the click handler component inside MapContainer */}
+        <RecenterMap center={coordinates} />
         <MapClickHandler setCoordinates={setCoordinates} />
         
         <Marker 
           position={coordinates} 
-          icon={createAdvancedIcon(" ", "#1e90ff")}
+          icon={createAdvancedIcon("O", "#1e90ff")}
         >
           <Popup>
             <strong>Active Coordinates</strong> <br /> 
@@ -94,6 +112,36 @@ export default function AdvancedMap() {
             Lng: {coordinates[1].toFixed(6)}
           </Popup>
         </Marker>
+
+        <Circle
+          center={coordinates}
+          radius={radius * 1000}
+          pathOptions={{ color: '#2563eb', fillColor: '#93c5fd', fillOpacity: 0.2, weight: 2 }}
+        />
+
+        {services.map((service) => {
+          const serviceLat = service.latitude ?? service.lat ?? service.location?.lat;
+          const serviceLng = service.longitude ?? service.lng ?? service.location?.lng;
+          if (serviceLat == null || serviceLng == null) return null;
+
+          return (
+            <Marker
+              key={service.id || `${serviceLat}-${serviceLng}`}
+              position={[serviceLat, serviceLng]}
+              icon={createAdvancedIcon(service.title?.charAt(0) || 'S', '#ef4444')}
+            >
+              <Popup>
+                <strong>{service.title || 'Service'}</strong>
+                <div className="text-sm">
+                  {service.categoryName ? `${service.categoryName}` : ''}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {service.distance != null ? `Distance: ${service.distance.toFixed(1)} km` : ''}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );

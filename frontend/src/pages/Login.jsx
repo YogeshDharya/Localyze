@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import { showToast } from '../components/ui/Toast';
+import logo from '../assets/logo.png';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -55,9 +56,17 @@ export default function Login() {
         <div className="glass-card bg-white/80 dark:bg-slate-800/80 p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            {/* <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
               <MapPin className="w-7 h-7 text-white" />
-            </div>
+            </div> */}
+              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center">
+                          <img
+                            src={logo}
+                            alt="Localyze Logo"
+                            className="w-20 h-20 rounded-xl object-cover group-hover:scale-110 transition-transform"
+                          />
+                        </div>
+
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your Localyze account</p>
           </div>
