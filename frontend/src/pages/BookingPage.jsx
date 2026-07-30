@@ -9,6 +9,15 @@ import Spinner from '../components/ui/Spinner';
 import { showToast } from '../components/ui/Toast';
 import { formatPrice } from '../utils/formatters';
 
+const TIME_SLOTS = [
+  '08:00 AM - 10:00 AM',
+  '10:00 AM - 12:00 PM',
+  '12:00 PM - 02:00 PM',
+  '02:00 PM - 04:00 PM',
+  '04:00 PM - 06:00 PM',
+  '06:00 PM - 08:00 PM',
+];
+
 export default function BookingPage() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
@@ -31,6 +40,7 @@ export default function BookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.bookingDate) { showToast.error('Please select a booking date'); return; }
+    if (!form.timeSlot) { showToast.error('Please select a time slot'); return; }
     setSubmitting(true);
     try {
       const res = await bookingService.create({
@@ -78,14 +88,25 @@ export default function BookingPage() {
               min={minDate}
             />
 
-            <Input
-              label="Preferred Time Slot"
-              name="timeSlot"
-              icon={Clock}
-              placeholder="e.g., 10:00 AM - 12:00 PM"
-              value={form.timeSlot}
-              onChange={(e) => setForm({ ...form, timeSlot: e.target.value })}
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                Preferred Time Slot
+              </label>
+              <div className="relative">
+                <Clock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <select
+                  name="timeSlot"
+                  value={form.timeSlot}
+                  onChange={(e) => setForm({ ...form, timeSlot: e.target.value })}
+                  className="glass-input pl-9 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select a time slot</option>
+                  {TIME_SLOTS.map((slot) => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
