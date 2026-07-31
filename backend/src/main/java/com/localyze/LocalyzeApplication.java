@@ -10,3 +10,4 @@ public class LocalyzeApplication {
         SpringApplication.run(LocalyzeApplication.class, args);
     }
 }
+
