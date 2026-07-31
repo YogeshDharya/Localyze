@@ -9,8 +9,8 @@ spring:
     # Database Configuration
     datasource:
         url: jdbc:mysql://localhost:3306/localyze?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-        username: newuser2
-        password: Yogesh%5000
+        username: root
+        password: root
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     # JPA / Hibernate
