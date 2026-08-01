@@ -8,6 +8,10 @@ const messageService = {
   markAsRead: (messageId) => api.put(`/messages/${messageId}/read`),
 
   getUnreadCount: () => api.get('/messages/unread-count'),
+
+  // Backward compatibility aliases
+  getByBooking: (bookingId) => api.get(`/messages/booking/${bookingId}`),
+  send: (data) => api.post('/messages', data),
 };
 
 export default messageService;

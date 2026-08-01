@@ -1,0 +1,39 @@
+server:
+  port: 8085
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: media-service
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:ao2rnbaz}
+    api-key: ${CLOUDINARY_API_KEY:543374969285461}
+    api-secret: ${CLOUDINARY_API_SECRET:mkcDK3tnkBPF-YjV9eMIy0SevOU}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+

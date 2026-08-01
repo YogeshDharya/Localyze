@@ -1,0 +1,141 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+        - AddRequestHeader=X-Forwarded-Host, localhost:8080
+        - AddRequestHeader=X-Forwarded-Port, 8080
+        - AddRequestHeader=X-Forwarded-Proto, http
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**,/api/bookings/**,/api/reviews/**
+        - id: search-service
+          uri: lb://search-service
+          predicates:
+            - Path=/api/services/**,/api/categories/**
+        - id: chat-service
+          uri: lb://chat-service
+          predicates:
+            - Path=/api/messages/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+        - id: media-service
+          uri: lb://media-service
+          predicates:
+            - Path=/api/upload/**
+        # Swagger aggregation routes
+        - id: auth-service-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/v3/api-docs/auth-service
+          filters:
+            - RewritePath=/v3/api-docs/auth-service, /v3/api-docs
+        - id: user-service-docs
+          uri: lb://user-service
+          predicates:
+            - Path=/v3/api-docs/user-service
+          filters:
+            - RewritePath=/v3/api-docs/user-service, /v3/api-docs
+        - id: search-service-docs
+          uri: lb://search-service
+          predicates:
+            - Path=/v3/api-docs/search-service
+          filters:
+            - RewritePath=/v3/api-docs/search-service, /v3/api-docs
+        - id: chat-service-docs
+          uri: lb://chat-service
+          predicates:
+            - Path=/v3/api-docs/chat-service
+          filters:
+            - RewritePath=/v3/api-docs/chat-service, /v3/api-docs
+        - id: payment-service-docs
+          uri: lb://payment-service
+          predicates:
+            - Path=/v3/api-docs/payment-service
+          filters:
+            - RewritePath=/v3/api-docs/payment-service, /v3/api-docs
+        - id: media-service-docs
+          uri: lb://media-service
+          predicates:
+            - Path=/v3/api-docs/media-service
+          filters:
+            - RewritePath=/v3/api-docs/media-service, /v3/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-base64-encoded-secret-key-here-change-in-production}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth-service
+      - name: user-service
+        url: /v3/api-docs/user-service
+      - name: search-service
+        url: /v3/api-docs/search-service
+      - name: chat-service
+        url: /v3/api-docs/chat-service
+      - name: payment-service
+        url: /v3/api-docs/payment-service
+      - name: media-service
+        url: /v3/api-docs/media-service
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.localyze.gateway: DEBUG
