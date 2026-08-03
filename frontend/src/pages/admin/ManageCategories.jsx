@@ -33,13 +33,17 @@ export default function ManageCategories() {
     e.preventDefault();
     setSaving(true);
     try {
-      await categoryService.create(form);
+      await categoryService.createCategory(form);
       showToast.success('Category created');
       setIsModalOpen(false);
       setForm({ name: '', description: '', iconUrl: '' });
       fetchCategories();
-    } catch { showToast.error('Failed to create category'); }
-    finally { setSaving(false); }
+    } catch (error) {
+      console.error('Failed to create category:', error);
+      showToast.error('Failed to create category');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <div className="flex justify-center py-20"><Spinner size="xl" /></div>;

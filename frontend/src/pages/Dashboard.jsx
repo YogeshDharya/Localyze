@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, MapPin, Filter, SlidersHorizontal, Star, Navigation } from 'lucide-react';
 import { useLocationContext as useLocationCtx } from '../contexts/LocationContext';
@@ -31,6 +31,7 @@ export default function Dashboard() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minRating, setMinRating] = useState('');
+  const [locationRequested, setLocationRequested] = useState(false);
 
   const debouncedSearch = useDebounce(search, 300);
 
@@ -94,6 +95,13 @@ export default function Dashboard() {
   useEffect(() => {
     fetchServices();
   }, [fetchServices]);
+
+  useEffect(() => {
+    if (!locationRequested) {
+      setLocationRequested(true);
+      getCurrentLocation();
+    }
+  }, [locationRequested, getCurrentLocation]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -183,7 +191,7 @@ export default function Dashboard() {
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(selectedCategory === cat.name ? '' : cat.name)}
-            className={`px-4 py-2 rounded-full text-sm  text-zinc-400 font-medium whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all dark:text-gray-400 ${
               selectedCategory === cat.name ? 'bg-blue-500 text-white shadow-lg' : 'glass hover:bg-white/30'
             }`}
           >
@@ -215,7 +223,12 @@ export default function Dashboard() {
         )}
       </div>
         <div className="border-spacing-7 border-orange-500 h-100">
-          <AdvancedMap />
+          <AdvancedMap
+            latitude={latitude}
+            longitude={longitude}
+            radius={radius}
+            services={services}
+          />
         </div>
 
       {/* Services Grid */}
