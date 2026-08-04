@@ -3,7 +3,11 @@
 # ===========================
 
 server:
+<<<<<<< HEAD
+    port: 8080
+=======
     port: 8082
+>>>>>>> 3011fc5a22f8810652dcc3daafba2c3c5b3a2777
 
 spring:
     # Database Configuration
@@ -16,7 +20,7 @@ spring:
     # JPA / Hibernate
     jpa:
         hibernate:
-            ddl-auto: validate
+            ddl-auto: update
         show-sql: true
         open-in-view: false
         properties:
@@ -28,8 +32,8 @@ spring:
     mail:
         host: smtp.gmail.com
         port: 587
-        username: aman.raibole.dev@gmail.com
-        password: nmeeszkrlaoafpzy
+        username: suraj03pandey@gmail.com
+        password: uihz zjmr kwul kdzp
         properties:
             mail:
                 smtp:
