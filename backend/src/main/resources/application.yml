@@ -3,7 +3,11 @@
 # ===========================
 
 server:
+<<<<<<< HEAD
     port: 8080
+=======
+    port: 8082
+>>>>>>> 3011fc5a22f8810652dcc3daafba2c3c5b3a2777
 
 spring:
     # Database Configuration

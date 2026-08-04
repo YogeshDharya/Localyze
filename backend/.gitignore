@@ -1,1 +1,8 @@
 /target/
+.env
+/bin/
+/.settings/
+/target/
+.project
+.classpath
+.factorypath

@@ -1,3 +1,11 @@
+# React
+/frontend/node_modules/
+/frontend/dist/
+
+.env
+
+# Spring Boot
+/backend/src/main/resources/application.yml
 /target/
 /node_modules/
 .env
