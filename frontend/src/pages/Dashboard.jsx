@@ -40,6 +40,13 @@ export default function Dashboard() {
     categoryService.getAll().then(res => setCategories(res.data)).catch(() => {});
   }, []);
 
+  // Detect user location on page load
+  useEffect(() => {
+    if (!latitude && !locationLoading) {
+      getCurrentLocation();
+    }
+  }, [latitude, locationLoading, getCurrentLocation]);
+
   // Load services
   const fetchServices = useCallback(async () => {
     setLoading(true);
@@ -174,8 +181,8 @@ export default function Dashboard() {
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
         <button
           onClick={() => setSelectedCategory('')}
-          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-            !selectedCategory ? 'bg-blue-500 text-white shadow-lg' : 'glass hover:bg-white/30'
+          className={`px-4 py-2 rounded-full text-sm  text-zinc-400 font-medium whitespace-nowrap transition-all ${
+            !selectedCategory ? 'bg-blue-500  text-white shadow-lg' : 'glass hover:bg-white/30'
           }`}
         >
           All

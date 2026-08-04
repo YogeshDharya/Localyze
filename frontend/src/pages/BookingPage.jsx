@@ -9,6 +9,15 @@ import Spinner from '../components/ui/Spinner';
 import { showToast } from '../components/ui/Toast';
 import { formatPrice } from '../utils/formatters';
 
+const TIME_SLOTS = [
+  '08:00 AM - 10:00 AM',
+  '10:00 AM - 12:00 PM',
+  '12:00 PM - 02:00 PM',
+  '02:00 PM - 04:00 PM',
+  '04:00 PM - 06:00 PM',
+  '06:00 PM - 08:00 PM',
+];
+
 export default function BookingPage() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
@@ -107,13 +116,12 @@ export default function BookingPage() {
               }
               min={minDate}
             />
-
             {/* Preferred Time Slot Dropdown */}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Preferred Time Slot
               </label>
-
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
 
@@ -157,6 +165,7 @@ export default function BookingPage() {
                   <option value="06:00 PM - 07:00 PM">
                     06:00 PM - 07:00 PM
                   </option>
+
                 </select>
               </div>
             </div>
