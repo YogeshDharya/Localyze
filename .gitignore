@@ -5,7 +5,5 @@
 .env
 
 # Spring Boot
-/backend/src/main/resources/application.yml
+/backend/localyze-backend/src/main/resources/application.yml
 /target/
-/node_modules/
-.env

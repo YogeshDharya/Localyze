@@ -70,7 +70,7 @@ export default function ManageCategories() {
               <tr key={cat.id} className="border-b border-white/10 dark:border-slate-700/30">
                 <td className="py-4 font-medium text-gray-900 dark:text-white">{cat.name}</td>
                 <td className="py-4 text-gray-600 dark:text-gray-400">{cat.description}</td>
-                <td className="py-4"><Badge variant={cat.isActive ? 'success' : 'default'}>{cat.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                <td className="py-4"><Badge variant={!cat.isActive ? 'success' : 'default'}>{!cat.isActive ? 'Active' : 'Inactive'}</Badge></td>
                 <td className="py-4 text-right">
                   <button className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-600 dark:text-gray-400 transition-colors">
                     <Edit2 className="w-4 h-4" />

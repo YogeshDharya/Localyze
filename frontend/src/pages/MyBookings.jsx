@@ -4,6 +4,7 @@ import { Calendar, X, MessageSquare } from 'lucide-react';
 import bookingService from '../services/bookingService';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
+import RazorpayButton from '../components/ui/RazorpayButton';
 import Spinner from '../components/ui/Spinner';
 import EmptyState from '../components/ui/EmptyState';
 import { showToast } from '../components/ui/Toast';
@@ -87,6 +88,9 @@ export default function MyBookings() {
                     onClick={() => navigate(`/bookings/${booking.id}/messages`)}>
                     Chat
                   </Button>
+                  {['PENDING', 'CONFIRMED'].includes(booking.status) && (
+                    <RazorpayButton bookingId={booking.id} label="Pay" className="!px-2 !py-1" />
+                  )}
                   {['PENDING', 'CONFIRMED'].includes(booking.status) && (
                     <Button variant="danger" size="sm" icon={X} onClick={() => handleCancel(booking.id)}>
                       Cancel
