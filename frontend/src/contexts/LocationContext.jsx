@@ -21,7 +21,6 @@ export function LocationProvider({ children }) {
       (position) => {
         const { latitude, longitude } = position.coords;
         setLocation({ lat: latitude, lng: longitude });
-        
         setLoading(false);
 
         // Reverse geocode to get address (optional, uses browser API)
