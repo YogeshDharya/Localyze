@@ -1,0 +1,47 @@
+# ===========================
+# Localyze Application Configuration
+# ===========================
+
+server:
+  port: 8080
+
+  spring:
+    datasource:
+      url: ${DB_URL:jdbc:mysql://localhost:3306/localyze?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+      username: ${DB_USERNAME:root}
+      password: ${DB_PASSWORD:root}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      open-in-view: false
+      properties:
+        hibernate:
+          format_sql: true
+
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: ${MAIL_USERNAME:aman.raibole.dev@gmail.com}
+      password: ${MAIL_PASSWORD:nmeeszkrlaoafpzy}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
+  jwt:
+    secret: ${JWT_SECRET:dGhpcyBpcyBhIHZlcnkgc2VjdXJlIGtleSBmb3IgbG9jYWx5emUgand0IHRva2VuIGdlbmVyYXRpb24gMjAyNA==}
+    expiration: 86400000
+
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:your-cloud-name}
+    api-key: ${CLOUDINARY_API_KEY:your-api-key}
+    api-secret: ${CLOUDINARY_API_SECRET:your-api-secret}
+
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:rzp_test_T6IweRxRewEjzh}
+    key-secret: ${RAZORPAY_KEY_SECRET:6PcjN78QbeqtaFxZBjSYffqh}
