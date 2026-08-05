@@ -8,6 +8,8 @@ import com.localyze.exception.*;
 import com.localyze.mapper.UserMapper;
 import com.localyze.repository.UserRepository;
 import com.localyze.security.JwtTokenProvider;
+
+import ch.qos.logback.core.recovery.ResilientSyslogOutputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -96,13 +98,15 @@ public class AuthService {
      * @throws UnauthorizedException if account is deactivated
      */
     public AuthResponse login(LoginRequest request) {
+    	System.out.println(request.getPassword());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
-
+        
+    
         if (!user.isActive()) {
             throw new UnauthorizedException("Your account has been deactivated");
         }

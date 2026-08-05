@@ -38,6 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    	System.out.println("===== LOGIN SERVICE CALLED =====");
         return ResponseEntity.ok(authService.login(request));
     }
 
