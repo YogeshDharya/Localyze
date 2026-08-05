@@ -14,7 +14,7 @@ export default function ManageServices() {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await adminService.getServices({ page, size: 20 });
+      const res = await adminService.getAdminServices({ page, size: 20 });
       setServices(res.data?.content || []);
     } catch {
       setServices([]);
@@ -27,7 +27,7 @@ export default function ManageServices() {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await adminService.updateServiceStatus(id, { status });
+      await adminService.updateServiceStatus(id, status);
       showToast.success(`Service status updated to ${status}`);
       fetchServices();
     } catch { showToast.error('Failed to update status'); }

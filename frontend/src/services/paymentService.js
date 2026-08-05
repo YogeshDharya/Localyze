@@ -1,7 +1,7 @@
 import api from './api';
 
 const paymentService = {
-  createOrder: (bookingId) => api.post('/payments/create-order', { bookingId }),
+  createOrder: (bookingId) => api.post('/payments/create-order', { bookingId: Number(bookingId) }),
 
   verifyPayment: (data) => api.post('/payments/verify', data),
 
