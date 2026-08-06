@@ -8,3 +8,15 @@
 /backend/localyze-backend/src/main/resources/application.yml
 /target/
 /.metadata/
+/target/
+.env
+/bin/
+/.settings/
+.project
+.classpath
+.factorypath
+backend/bin/
+backend/.settings/
+backend/.project
+backend/.classpath
+backend/.factorypath
