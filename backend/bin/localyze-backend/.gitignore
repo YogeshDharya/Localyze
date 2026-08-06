@@ -1,7 +1,0 @@
-/target/
-.env
-/bin/
-/.settings/
-.project
-.classpath
-.factorypath
