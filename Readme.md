@@ -1,4 +1,4 @@
-\# Localyze - Project Setup Guide
+# Localyze - Project Setup Guide
 
 
 
@@ -6,7 +6,7 @@ This guide explains how to clone, configure, and run the \*\*Localyze\*\* monore
 
 
 
-\## Prerequisites
+## Prerequisites
 
 
 
@@ -14,13 +14,13 @@ Make sure the following software is installed on your system:
 
 
 
-\### Frontend
+### Frontend
 
-\- Visual Studio Code
+- Visual Studio Code
 
-\- Node.js (LTS version recommended)
+- Node.js (LTS version recommended)
 
-\- npm (comes with Node.js)
+- npm (comes with Node.js)
 
 
 
@@ -38,13 +38,13 @@ npm -v
 
 
 
-\### Backend
+### Backend
 
-\- Eclipse IDE for Enterprise Java and Web Developers
+- Eclipse IDE for Enterprise Java and Web Developers
 
-\- Java JDK 17 
+- Java JDK 17 
 
-\- Apache Maven (optional if using Eclipse EE Java and Web Developers)
+- Apache Maven (optional if using Eclipse EE Java and Web Developers)
 
 
 
@@ -62,21 +62,21 @@ mvn -version //optional
 
 
 
-\### Database
+### Database
 
 Install and start:
 
 
 
-\- MySQL 8.x
+- MySQL 8.x
 
 
 
-\---
+---
 
 
 
-\# Clone the Repository
+# Clone the Repository
 
 
 
@@ -120,23 +120,23 @@ repository-name/
 
 
 
-\---
+---
 
 
 
-\# Backend Setup (Spring Boot)
+# Backend Setup (Spring Boot)
 
 
 
-\## Step 1: Open in Eclipse
+## Step 1: Open in Eclipse
 
 
 
-1\. Open Eclipse.
+1. Open Eclipse.
 
-2\. Select your workspace.
+2. Select your workspace.
 
-3\. Click
+3. Click
 
 
 
@@ -148,7 +148,7 @@ File → Import
 
 
 
-4\. Choose
+4. Choose
 
 
 
@@ -160,7 +160,7 @@ Maven → Existing Maven Projects
 
 
 
-5\. Browse to
+5. Browse to
 
 
 
@@ -172,7 +172,7 @@ repository-name/backend
 
 
 
-6\. Click \*\*Finish\*\*.
+6. Click \*\*Finish\*\*.
 
 
 
@@ -180,11 +180,11 @@ Wait for Maven dependencies to download.
 
 
 
-\---
+---
 
 
 
-\## Step 2: Configure Database
+## Step 2: Configure Database
 
 
 
@@ -209,11 +209,11 @@ paste application.yml
 change database credentials 
 and API keys(If required).
 
-\---
+---
 
 
 
-\## Step 3: Build the Project
+## Step 3: Build the Project
 
 
 
@@ -241,11 +241,11 @@ mvn clean install
 
 
 
-\---
+---
 
 
 
-\## Step 4: Run the Backend
+## Step 4: Run the Backend
 
 
 
@@ -301,15 +301,15 @@ http://localhost:8080
 
 
 
-\---
+---
 
 
 
-\# Frontend Setup (React)
+# Frontend Setup (React)
 
 
 
-\## Step 1: Open in VS Code
+## Step 1: Open in VS Code
 
 
 
@@ -341,11 +341,11 @@ repository-name/frontend
 
 
 
-\---
+---
 
 
 
-\## Step 2: Install Dependencies
+## Step 2: Install Dependencies
 
 
 
@@ -369,11 +369,11 @@ This installs all packages listed in `package.json`.
 
 
 
-\---
+---
 
 
 
-\## Step 3: Start the React App
+## Step 3: Start the React App
 
 
 
@@ -405,15 +405,15 @@ Open this URL in your browser.
 
 
 
-\---
+---
 
 
 
-\# Running the Complete Project
+# Running the Complete Project
 
 
 
-\### Terminal 1
+### Terminal 1
 
 
 
@@ -429,7 +429,7 @@ http://localhost:8080
 
 
 
-\### Terminal 2
+### Terminal 2
 
 
 
@@ -449,15 +449,15 @@ The frontend will communicate with the backend through the configured API URL.
 
 
 
-\---
+---
 
 
 
-\# Useful Commands
+# Useful Commands
 
 
 
-\### Frontend
+### Frontend
 
 
 
@@ -485,29 +485,29 @@ npm run dev
 
 
 
-\# Troubleshooting
+# Troubleshooting
 
 
 
-\## Backend won't start
+## Backend won't start
 
 
 
-\- Verify MySQL is running.
+- Verify MySQL is running.
 
-\- Check database credentials.
+- Check database credentials.
 
-\- Ensure Java version matches the project requirements.
+- Ensure Java version matches the project requirements.
 
-\- Update Maven dependencies (`Maven → Update Project`).
-
-
-
-\---
+- Update Maven dependencies (`Maven → Update Project`).
 
 
 
-\## Frontend won't start
+---
+
+
+
+## Frontend won't start
 
 
 
@@ -531,35 +531,35 @@ npm install
 
 
 
-\---
+---
 
 
 
-\## API requests fail
+## API requests fail
 
 
 
-\- Ensure the backend is running on `http://localhost:8080`.
+- Ensure the backend is running on `http://localhost:8080`.
 
-\- Verify the frontend `.env` file points to the correct backend URL.
+- Verify the frontend `.env` file points to the correct backend URL.
 
-\- Confirm CORS is configured correctly in the Spring Boot application.
-
-
-
-\---
+- Confirm CORS is configured correctly in the Spring Boot application.
 
 
 
-\# Technologies Used
+---
 
 
 
-\### Frontend
+# Technologies Used
 
 
 
-\- React
+### Frontend
+
+
+
+- React
 
 \- Vite
 
