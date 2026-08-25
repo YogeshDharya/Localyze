@@ -1,89 +1,161 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Edit2, Trash2, Plus, Package } from 'lucide-react';
-import serviceService from '../../services/serviceService';
-import Button from '../../components/ui/Button';
-import Badge from '../../components/ui/Badge';
-import Spinner from '../../components/ui/Spinner';
-import EmptyState from '../../components/ui/EmptyState';
-import { formatPrice } from '../../utils/formatters';
-import { showToast } from '../../components/ui/Toast';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { serviceService } from '../../services/serviceService';
+import { Edit2, Trash2, Plus, Star } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
-export default function MyServices() {
-  const navigate = useNavigate();
+const MyServices = () => {
+  const { user } = useAuth();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const size = 10;
 
   const fetchServices = async () => {
-    setLoading(true);
     try {
-      const res = await serviceService.getMyServices({ page: 0, size: 50 });
-      setServices(res.data?.content || []);
-    } catch {
-      setServices([]);
+      setLoading(true);
+      const response = await serviceService.getByProvider(user.id, page, size);
+      if (response.success && response.data) {
+        setServices(response.data.content || []);
+        setTotalPages(response.data.totalPages || 1);
+      }
+    } catch (err) {
+      toast.error('Failed to load services');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchServices();
-  }, []);
+    if (user?.id) {
+      fetchServices();
+    }
+  }, [user, page]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this service?')) return;
-    try {
-      await serviceService.delete(id);
-      showToast.success('Service deleted successfully');
-      fetchServices();
-    } catch (err) {
-      showToast.error(err.response?.data?.message || 'Failed to delete service');
+    if (window.confirm('Are you sure you want to delete this service?')) {
+      try {
+        await serviceService.remove(id);
+        toast.success('Service deleted successfully');
+        fetchServices();
+      } catch (err) {
+        toast.error('Failed to delete service');
+        console.error(err);
+      }
     }
   };
 
+  if (loading && services.length === 0) {
+    return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>;
+  }
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Services</h1>
-        <Button icon={Plus} onClick={() => navigate('/seller/services/new')}>Add Service</Button>
+        <Link to="/seller/services/new" className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+          <Plus className="w-5 h-5 mr-2" />
+          Add New Service
+        </Link>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20"><Spinner size="xl" /></div>
-      ) : services.length === 0 ? (
-        <EmptyState icon={Package} title="No services yet" description="You haven't listed any services."
-          action={{ label: 'Add Your First Service', onClick: () => navigate('/seller/services/new') }} />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map(service => (
-            <div key={service.id} className="glass-card flex flex-col">
-              <div className="h-40 -mx-6 -mt-6 mb-4 bg-gray-200 dark:bg-slate-700 rounded-t-2xl overflow-hidden relative">
-                {service.imageUrls?.[0] ? (
-                  <img src={service.imageUrls[0]} alt={service.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl">🔧</div>
-                )}
-                <div className="absolute top-2 right-2">
-                  <Badge variant={service.status === 'ACTIVE' ? 'success' : 'warning'}>{service.status}</Badge>
-                </div>
-              </div>
-              <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 mb-1">{service.title}</h3>
-              <p className="text-sm text-gray-500 mb-2">{service.categoryName}</p>
-              <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-200/50 dark:border-slate-700/50">
-                <span className="font-bold text-blue-600 dark:text-blue-400">{formatPrice(service.price)}</span>
-                <div className="flex gap-2">
-                  <button onClick={() => navigate(`/seller/services/${service.id}/edit`)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-600 dark:text-gray-400 transition-colors">
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => handleDelete(service.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg text-red-500 transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+      {services.length === 0 ? (
+        <div className="glass rounded-xl p-12 text-center border border-gray-200 dark:border-gray-800">
+          <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-2">No services yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">You haven't added any services to your profile yet.</p>
+          <Link to="/seller/services/new" className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+            <Plus className="w-5 h-5 mr-2" />
+            Create Your First Service
+          </Link>
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <div key={service.id} className="glass rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 flex flex-col">
+                <div className="h-48 bg-gray-200 dark:bg-gray-800 relative">
+                  {service.imageUrls && service.imageUrls.length > 0 ? (
+                    <img src={service.imageUrls[0]} alt={service.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
+                      No Image
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-sm font-bold text-primary-600 dark:text-primary-400 shadow-sm">
+                    ${service.price} / {service.priceUnit.replace('per_', '')}
+                  </div>
+                </div>
+                
+                <div className="p-5 flex-1 flex flex-col">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1" title={service.title}>
+                      {service.title}
+                    </h3>
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <Star className="w-4 h-4 text-amber-500 mr-1 fill-amber-500" />
+                    <span>{service.averageRating?.toFixed(1) || '0.0'} ({service.totalReviews || 0} reviews)</span>
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 flex-1">
+                    {service.description}
+                  </p>
+                  
+                  <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center mt-auto">
+                    <span className="text-xs text-gray-500 dark:text-gray-500 truncate mr-2">
+                      {service.categoryName || 'Uncategorized'}
+                    </span>
+                    <div className="flex space-x-2">
+                      <Link 
+                        to={`/seller/services/${service.id}/edit`}
+                        className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg transition-colors"
+                        title="Edit Service"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Link>
+                      <button 
+                        onClick={() => handleDelete(service.id)}
+                        className="p-2 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-lg transition-colors"
+                        title="Delete Service"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8 space-x-2">
+              <button 
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="px-4 py-2 glass rounded-lg disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 flex items-center dark:text-gray-300">
+                Page {page + 1} of {totalPages}
+              </span>
+              <button 
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page === totalPages - 1}
+                className="px-4 py-2 glass rounded-lg disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
-}
+};
+
+export default MyServices;

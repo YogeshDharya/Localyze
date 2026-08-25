@@ -1,169 +1,227 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Clock, Phone, Star, Calendar, ArrowLeft, User } from 'lucide-react';
-import serviceService from '../services/serviceService';
-import reviewService from '../services/reviewService';
+import { serviceService } from '../services/serviceService';
+import { reviewService } from '../services/reviewService';
 import { useAuth } from '../contexts/AuthContext';
+import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
 import StarRating from '../components/ui/StarRating';
-import Spinner from '../components/ui/Spinner';
-import EmptyState from '../components/ui/EmptyState';
-import { formatPrice, formatRating, formatDate } from '../utils/formatters';
+import Badge from '../components/ui/Badge';
+import { MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function ServiceDetails() {
+const ServiceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  
   const [service, setService] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const [svcRes, revRes] = await Promise.all([
-          serviceService.getById(id),
-          reviewService.getByService(id, { page: 0, size: 10 }),
-        ]);
-        setService(svcRes.data);
-        setReviews(revRes.data?.content || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch();
+    fetchServiceData();
   }, [id]);
 
-  if (loading) return <div className="flex justify-center py-20"><Spinner size="xl" /></div>;
-  if (!service) return <EmptyState title="Service not found" description="This service may have been removed" />;
+  const fetchServiceData = async () => {
+    try {
+      const [serviceData, reviewsData] = await Promise.all([
+        serviceService.getById(id),
+        reviewService.getByService(id, 0, 10) // fetch first page of reviews
+      ]);
+      setService(serviceData);
+      setReviews(reviewsData.content || []);
+    } catch (err) {
+      console.error('Failed to load service details', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const images = service.imageUrls?.length > 0 ? service.imageUrls : [];
+  const nextImage = () => {
+    if (service?.imageUrls?.length) {
+      setCurrentImageIndex((prev) => (prev + 1) % service.imageUrls.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (service?.imageUrls?.length) {
+      setCurrentImageIndex((prev) => (prev - 1 + service.imageUrls.length) % service.imageUrls.length);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8 animate-pulse">
+        <div className="h-96 bg-white/5 rounded-2xl mb-8"></div>
+        <div className="h-12 bg-white/5 w-1/2 rounded mb-4"></div>
+        <div className="h-6 bg-white/5 w-1/4 rounded mb-8"></div>
+        <div className="space-y-4">
+          <div className="h-4 bg-white/5 rounded w-full"></div>
+          <div className="h-4 bg-white/5 rounded w-5/6"></div>
+          <div className="h-4 bg-white/5 rounded w-4/6"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!service) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-2xl font-bold text-white mb-4">Service not found</h2>
+        <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-500 hover:text-blue-500 mb-6 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </button>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Image Gallery */}
+      <div className="relative h-[400px] sm:h-[500px] rounded-2xl overflow-hidden group">
+        {service.imageUrls && service.imageUrls.length > 0 ? (
+          <>
+            <img 
+              src={service.imageUrls[currentImageIndex]} 
+              alt={service.title}
+              className="w-full h-full object-cover"
+            />
+            {service.imageUrls.length > 1 && (
+              <>
+                <button 
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button 
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                  {service.imageUrls.map((_, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`w-2 h-2 rounded-full ${idx === currentImageIndex ? 'bg-blue-500' : 'bg-white/50'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-full bg-white/5 flex items-center justify-center">
+            <span className="text-gray-500">No image available</span>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left - Image + Details */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Image Gallery */}
-          <div className="glass-card p-0 overflow-hidden">
-            <div className="h-64 sm:h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20">
-              {images.length > 0 ? (
-                <img src={images[activeImage]} alt={service.title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-6xl">🔧</div>
-              )}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Header Info */}
+          <div>
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <Badge variant="primary">{service.categoryName}</Badge>
+              <span className="text-gray-400">•</span>
+              <span className="text-gray-300 font-medium">By {service.providerName}</span>
             </div>
-            {images.length > 1 && (
-              <div className="flex gap-2 p-4">
-                {images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImage(i)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? 'border-blue-500 scale-105' : 'border-transparent opacity-70'}`}>
-                    <img src={img} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
+            
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">{service.title}</h1>
+            
+            <div className="flex flex-wrap items-center gap-6 text-gray-300">
+              <div className="flex items-center gap-2">
+                <StarRating rating={service.averageRating} size="lg" />
+                <span>({service.totalReviews} reviews)</span>
               </div>
-            )}
+              <div className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-gray-400" />
+                <span>{service.city}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Info */}
-          <div className="glass-card">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <Badge variant="info" className="mb-2">{service.categoryName}</Badge>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{service.title}</h1>
+          {/* Description */}
+          <GlassCard className="p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">About this service</h2>
+            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+              {service.description}
+            </p>
+          </GlassCard>
+
+          {/* Location / Map Placeholder */}
+          <GlassCard className="p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Location</h2>
+            <p className="text-gray-300 mb-4">{service.address}</p>
+            <div className="w-full h-64 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-gray-400">
+              <div className="text-center">
+                <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                Map: {service.latitude}, {service.longitude}
               </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatPrice(service.price)}</p>
-                <p className="text-sm text-gray-500">{service.priceUnit || 'fixed'}</p>
-              </div>
             </div>
-
-            <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{service.address}</span>
-              {service.availability && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{service.availability}</span>}
-            </div>
-
-            <div className="flex items-center gap-2 mb-6">
-              <StarRating rating={service.avgRating || 0} />
-              <span className="font-medium">{formatRating(service.avgRating)}</span>
-              <span className="text-gray-500">({service.totalReviews} reviews)</span>
-            </div>
-
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{service.description}</p>
-          </div>
+          </GlassCard>
 
           {/* Reviews */}
-          <div className="glass-card">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Reviews ({service.totalReviews})
-            </h3>
-            {reviews.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No reviews yet</p>
-            ) : (
-              <div className="space-y-4">
-                {reviews.map(review => (
-                  <div key={review.id} className="p-4 rounded-xl bg-white/10 dark:bg-slate-700/20 border border-white/10">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">{review.userName?.charAt(0)}</span>
-                      </div>
+          <GlassCard className="p-6">
+            <h2 className="text-xl font-semibold text-white mb-6">Reviews</h2>
+            {reviews.length > 0 ? (
+              <div className="space-y-6">
+                {reviews.map((review) => (
+                  <div key={review.id} className="border-b border-white/10 pb-6 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-start mb-2">
                       <div>
-                        <p className="text-sm font-medium text-gray-800 dark:text-white">{review.userName}</p>
-                        <p className="text-xs text-gray-500">{formatDate(review.createdAt)}</p>
+                        <span className="font-medium text-white block">{review.userName}</span>
+                        <span className="text-sm text-gray-400">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
-                      <StarRating rating={review.rating} size="sm" className="ml-auto" />
+                      <StarRating rating={review.rating} />
                     </div>
-                    {review.comment && <p className="text-sm text-gray-600 dark:text-gray-400">{review.comment}</p>}
+                    <p className="text-gray-300 mt-2">{review.comment}</p>
                   </div>
                 ))}
               </div>
+            ) : (
+              <p className="text-gray-400 text-center py-4">No reviews yet.</p>
             )}
-          </div>
+          </GlassCard>
         </div>
 
-        {/* Right Sidebar */}
-        <div className="space-y-6">
-          {/* Seller Card */}
-          <div className="glass-card">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Service Provider</h3>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <User className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900 dark:text-white">{service.sellerName}</p>
-                {service.sellerPhone && (
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Phone className="w-3 h-3" /> {service.sellerPhone}
-                  </p>
-                )}
-              </div>
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <GlassCard className="p-6 sticky top-8">
+            <div className="text-center mb-6">
+              <span className="text-3xl font-bold text-white">₹{service.price}</span>
+              <span className="text-gray-400 ml-2">/ {service.priceUnit}</span>
             </div>
-          </div>
-
-          {/* Book CTA */}
-          <div className="glass-card bg-gradient-to-br from-blue-500/10 to-purple-500/10">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Book This Service</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Select a date and time to get started</p>
-            <Button
-              icon={Calendar}
-              className="w-full"
-              onClick={() => isAuthenticated ? navigate(`/book/${id}`) : navigate('/login')}
-            >
-              {isAuthenticated ? 'Book Now' : 'Login to Book'}
-            </Button>
-          </div>
+            
+            {user?.role === 'USER' ? (
+              <Button 
+                variant="primary" 
+                fullWidth 
+                size="lg"
+                onClick={() => navigate(`/book/${service.id}`)}
+              >
+                Book Now
+              </Button>
+            ) : !user ? (
+              <Button 
+                variant="outline" 
+                fullWidth 
+                onClick={() => navigate('/login')}
+              >
+                Login to Book
+              </Button>
+            ) : (
+              <p className="text-sm text-center text-gray-400">
+                You must be a customer to book this service.
+              </p>
+            )}
+          </GlassCard>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ServiceDetails;

@@ -1,26 +1,28 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import Spinner from '../ui/Spinner';
+import { Loader2 } from 'lucide-react';
 
-export default function ProtectedRoute({ children, roles = [] }) {
-  const { user, isAuthenticated, loading } = useAuth();
-  const location = useLocation();
+const ProtectedRoute = ({ children, roles }) => {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-mesh-light dark:bg-mesh-dark flex items-center justify-center">
-        <Spinner size="xl" />
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(user?.role)) {
-    return <Navigate to="/dashboard" replace />;
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />; // Or to a 'Not Authorized' page
   }
 
   return children;
-}
+};
+
+export default ProtectedRoute;

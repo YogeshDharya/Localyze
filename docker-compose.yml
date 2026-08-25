@@ -1,0 +1,181 @@
+version: '3.8'
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Zookeeper (required by Kafka)
+  # ─────────────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: localyze-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - localyze-net
+
+  # ─────────────────────────────────────────────
+  # Kafka Broker
+  # ─────────────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: localyze-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - localyze-net
+
+  # ─────────────────────────────────────────────
+  # Kafka UI (optional, for debugging)
+  # ─────────────────────────────────────────────
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: localyze-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: localyze
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    networks:
+      - localyze-net
+
+  # ─────────────────────────────────────────────
+  # MySQL — auth_db
+  # ─────────────────────────────────────────────
+  auth-db:
+    image: mysql:8.0
+    container_name: localyze-auth-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localyze_root}
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: ${AUTH_DB_USER:-auth_user}
+      MYSQL_PASSWORD: ${AUTH_DB_PASS:-auth_pass}
+    ports:
+      - "3307:3306"
+    volumes:
+      - auth-db-data:/var/lib/mysql
+    networks:
+      - localyze-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MySQL — user_db
+  # ─────────────────────────────────────────────
+  user-db:
+    image: mysql:8.0
+    container_name: localyze-user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localyze_root}
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: ${USER_DB_USER:-user_user}
+      MYSQL_PASSWORD: ${USER_DB_PASS:-user_pass}
+    ports:
+      - "3308:3306"
+    volumes:
+      - user-db-data:/var/lib/mysql
+    networks:
+      - localyze-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MySQL — search_db
+  # ─────────────────────────────────────────────
+  search-db:
+    image: mysql:8.0
+    container_name: localyze-search-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localyze_root}
+      MYSQL_DATABASE: search_db
+      MYSQL_USER: ${SEARCH_DB_USER:-search_user}
+      MYSQL_PASSWORD: ${SEARCH_DB_PASS:-search_pass}
+    ports:
+      - "3309:3306"
+    volumes:
+      - search-db-data:/var/lib/mysql
+    networks:
+      - localyze-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MySQL — chat_db
+  # ─────────────────────────────────────────────
+  chat-db:
+    image: mysql:8.0
+    container_name: localyze-chat-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localyze_root}
+      MYSQL_DATABASE: chat_db
+      MYSQL_USER: ${CHAT_DB_USER:-chat_user}
+      MYSQL_PASSWORD: ${CHAT_DB_PASS:-chat_pass}
+    ports:
+      - "3310:3306"
+    volumes:
+      - chat-db-data:/var/lib/mysql
+    networks:
+      - localyze-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MySQL — payment_db
+  # ─────────────────────────────────────────────
+  payment-db:
+    image: mysql:8.0
+    container_name: localyze-payment-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-localyze_root}
+      MYSQL_DATABASE: payment_db
+      MYSQL_USER: ${PAYMENT_DB_USER:-payment_user}
+      MYSQL_PASSWORD: ${PAYMENT_DB_PASS:-payment_pass}
+    ports:
+      - "3311:3306"
+    volumes:
+      - payment-db-data:/var/lib/mysql
+    networks:
+      - localyze-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  auth-db-data:
+  user-db-data:
+  search-db-data:
+  chat-db-data:
+  payment-db-data:
+
+networks:
+  localyze-net:
+    driver: bridge

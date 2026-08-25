@@ -1,47 +1,35 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-const ThemeContext = createContext(null);
+const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    try {
-      const stored = localStorage.getItem('localyze-theme');
-      if (stored) return stored === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } catch {
-      return false;
+export const ThemeProvider = ({ children }) => {
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check local storage or system preference
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      return JSON.parse(saved);
     }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('localyze-theme', 'dark');
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
     } else {
-      root.classList.remove('dark');
-      localStorage.setItem('localyze-theme', 'light');
+      document.documentElement.classList.remove('dark');
     }
-  }, [isDarkMode]);
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
-  const toggleTheme = useCallback(() => {
-    setIsDarkMode((prev) => !prev);
-  }, []);
-
-  const value = {
-    isDarkMode,
-    toggleTheme,
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
   };
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
-}
+  return (
+    <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
-
-export default ThemeContext;
+export const useTheme = () => useContext(ThemeContext);

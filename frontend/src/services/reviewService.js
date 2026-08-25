@@ -1,14 +1,6 @@
 import api from './api';
 
-const reviewService = {
-  getByService: (serviceId, params = {}) =>
-    api.get(`/reviews/service/${serviceId}`, { params }),
-
-  createReview: (data) => api.post('/reviews', data),
-
-  updateReview: (id, data) => api.put(`/reviews/${id}`, data),
-
-  deleteReview: (id) => api.delete(`/reviews/${id}`),
+export const reviewService = {
+  getByService: (serviceId, page = 0, size = 10) => api.get(`/reviews/service/${serviceId}?page=${page}&size=${size}`),
+  create: (data) => api.post('/reviews', data)
 };
-
-export default reviewService;

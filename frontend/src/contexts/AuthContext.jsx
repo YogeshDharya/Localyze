@@ -1,30 +1,29 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import authService from '../services/authService';
-import userService from '../services/userService';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Rehydrate user on mount if token exists
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
         try {
-          const response = await userService.getProfile();
-          setUser(response.data);
-          setIsAuthenticated(true);
+          // The Axios interceptor returns response.data, so `response` is:
+          // { success: true, message: "...", data: UserResponse, timestamp: "..." }
+          const response = await api.get('/users/me');
+          if (response && response.success) {
+            setUser(response.data);
+          } else {
+            localStorage.removeItem('token');
+          }
         } catch (error) {
-          console.error('Failed to rehydrate user:', error);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('user');
-          setUser(null);
-          setIsAuthenticated(false);
+          console.error('Session expired or invalid token:', error);
+          localStorage.removeItem('token');
         }
       }
       setLoading(false);
@@ -33,62 +32,86 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  const login = useCallback(async (email, password) => {
-    const response = await authService.login({ email, password });
-    const { accessToken, refreshToken, user: userData } = response.data;
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    setIsAuthenticated(true);
-    return userData;
-  }, []);
+  const login = async (email, password) => {
+    try {
+      // Returns: { success: true, data: { token, role, userId, email, ... } }
+      const response = await api.post('/auth/login', { email, password });
 
-  const register = useCallback(async (data) => {
-    const response = await authService.register(data);
-    const { accessToken, refreshToken, user: userData } = response.data;
-    if (accessToken) {
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      setIsAuthenticated(true);
+      if (response && response.success && response.data && response.data.token) {
+        const { token, role, userId, email: userEmail } = response.data;
+        localStorage.setItem('token', token);
+
+        // Fetch full profile from user-service
+        try {
+          const profileRes = await api.get('/users/me');
+          if (profileRes && profileRes.success) {
+            setUser(profileRes.data);
+          } else {
+            // Fallback: set minimal user from auth response
+            setUser({ id: userId, email: userEmail, role });
+          }
+        } catch (profileErr) {
+          console.warn('Could not fetch profile from user-service, using auth data:', profileErr);
+          // user-service may not have synced yet via Kafka — use auth data as fallback
+          setUser({ id: userId, email: userEmail, role });
+        }
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
     }
-    return response.data;
-  }, []);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    setUser(null);
-    setIsAuthenticated(false);
-  }, []);
-
-  const updateUser = useCallback((updatedData) => {
-    setUser((prev) => ({ ...prev, ...updatedData }));
-    localStorage.setItem('user', JSON.stringify({ ...user, ...updatedData }));
-  }, [user]);
-
-  const value = {
-    user,
-    isAuthenticated,
-    loading,
-    login,
-    register,
-    logout,
-    updateUser,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  const register = async (userData) => {
+    try {
+      // Returns: { success: true, data: { token, role, userId, email, ... } }
+      const response = await api.post('/auth/register', userData);
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+      if (response && response.success && response.data && response.data.token) {
+        const { token, role, userId, email } = response.data;
+        localStorage.setItem('token', token);
 
-export default AuthContext;
+        // The auth-service publishes a Kafka event to user-service.
+        // Give user-service a moment to process it, then fetch profile.
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        try {
+          const profileRes = await api.get('/users/me');
+          if (profileRes && profileRes.success) {
+            setUser(profileRes.data);
+          } else {
+            setUser({ id: userId, email, role });
+          }
+        } catch {
+          // user-service may still be processing — fallback to auth data
+          setUser({ id: userId, email, role });
+        }
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return false;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    window.location.href = '/login';
+  };
+
+  const hasRole = (role) => {
+    return user && user.role === role;
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, hasRole, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

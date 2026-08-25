@@ -1,17 +1,10 @@
 import api from './api';
 
-const bookingService = {
-  create: (data) => api.post('/bookings', data),
-
-  getMyBookings: (params = {}) => api.get('/bookings/my', { params }),
-
-  getSellerBookings: (params = {}) => api.get('/bookings/seller', { params }),
-
+export const bookingService = {
+  create: (data) => api.post('/bookings/', data),
   getById: (id) => api.get(`/bookings/${id}`),
-
-  updateStatus: (id, data) => api.put(`/bookings/${id}/status`, data),
-
-  cancel: (id, data) => api.put(`/bookings/${id}/cancel`, data),
+  getMyAsCustomer: (page = 0, size = 10) => api.get(`/bookings/my/customer?page=${page}&size=${size}`),
+  getMyAsProvider: (page = 0, size = 10) => api.get(`/bookings/my/provider?page=${page}&size=${size}`),
+  updateStatus: (id, status) => api.patch(`/bookings/${id}/status`, { status }),
+  cancel: (id) => api.post(`/bookings/${id}/cancel`)
 };
-
-export default bookingService;

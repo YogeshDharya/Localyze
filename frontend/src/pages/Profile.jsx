@@ -1,177 +1,143 @@
-import { useState } from 'react';
-import { User, Mail, Phone, MapPin, Camera } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import userService from '../services/userService';
-import Input from '../components/ui/Input';
+import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
-import { showToast } from '../components/ui/Toast';
+import Input from '../components/ui/Input';
+import toast from 'react-hot-toast';
 
-// ✅ NEW IMPORT
-import LocationPicker from '../components/location/LocationPicker';
-
-export default function Profile() {
-  const { user, updateUser } = useAuth();
-  const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const [form, setForm] = useState({
-    fullName: user?.fullName || '',
-    phone: user?.phone || '',
-    address: user?.address || '',
+const Profile = () => {
+  const { user: authUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    city: '',
+    avatarUrl: ''
   });
 
-  // ✅ NEW STATE
-  const [location, setLocation] = useState(null);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-  const handleSave = async () => {
-    setLoading(true);
+  const fetchProfile = async () => {
     try {
-      const res = await userService.updateProfile({
-        ...form,
-        location, // ✅ send location
+      const response = await api.get('/users/me');
+      const data = response.data || response;
+      setFormData({
+        name: data.name || '',
+        phone: data.phone || '',
+        city: data.city || '',
+        avatarUrl: data.avatarUrl || ''
       });
-      updateUser(res.data);
-      showToast.success('Profile updated!');
-      setEditing(false);
     } catch (err) {
-      showToast.error(err.response?.data?.message || 'Failed to update profile');
+      console.error('Failed to load profile', err);
+      toast.error('Failed to load profile details');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        My Profile
-      </h1>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-      {/* Profile card */}
-      <div className="glass-card text-center mb-6">
-        <div className="relative inline-block mb-4">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto">
-            {user?.profileImageUrl ? (
-              <img
-                src={user.profileImageUrl}
-                alt=""
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <span className="text-3xl font-bold text-white">
-                {user?.fullName?.charAt(0)?.toUpperCase()}
-              </span>
-            )}
-          </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.put('/users/me', {
+        name: formData.name,
+        phone: formData.phone,
+        city: formData.city
+        // Assuming avatarUrl update might be handled separately or similarly if supported
+      });
+      toast.success('Profile updated successfully');
+    } catch (err) {
+      console.error('Failed to update profile', err);
+      toast.error(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
 
-          <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors">
-            <Camera className="w-4 h-4" />
-          </button>
-        </div>
-
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          {user?.fullName}
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400">
-          {user?.email}
-        </p>
-        <Badge variant="info" className="mt-2">
-          {user?.role}
-        </Badge>
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12 flex justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
+    );
+  }
 
-      {/* Edit form */}
-      <div className="glass-card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Personal Information
-          </h3>
-
-          {!editing ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setEditing(true)}
-            >
-              Edit
-            </Button>
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-bold text-white mb-8">My Profile</h1>
+      
+      <GlassCard className="p-8">
+        <div className="flex flex-col items-center mb-8">
+          {formData.avatarUrl ? (
+            <img 
+              src={formData.avatarUrl} 
+              alt="Profile" 
+              className="w-24 h-24 rounded-full object-cover border-4 border-white/10"
+            />
           ) : (
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setEditing(false)}
-              >
-                Cancel
-              </Button>
-              <Button size="sm" loading={loading} onClick={handleSave}>
-                Save
-              </Button>
+            <div className="w-24 h-24 rounded-full bg-blue-500/20 flex items-center justify-center border-4 border-white/10">
+              <span className="text-3xl text-blue-400 font-semibold">
+                {formData.name.charAt(0).toUpperCase()}
+              </span>
             </div>
           )}
-        </div>
-
-        <div className="space-y-4">
-          <Input
-            label="Full Name"
-            icon={User}
-            value={form.fullName}
-            onChange={(e) =>
-              setForm({ ...form, fullName: e.target.value })
-            }
-            disabled={!editing}
-          />
-
-          <Input
-            label="Email"
-            icon={Mail}
-            value={user?.email}
-            disabled
-          />
-
-          <Input
-            label="Phone"
-            icon={Phone}
-            value={form.phone}
-            onChange={(e) =>
-              setForm({ ...form, phone: e.target.value })
-            }
-            disabled={!editing}
-          />
-
-          <Input
-            label="Address"
-            icon={MapPin}
-            value={form.address}
-            onChange={(e) =>
-              setForm({ ...form, address: e.target.value })
-            }
-            disabled={!editing}
-          />
-
-          {/* ✅ NEW MAP SECTION */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium mb-2">
-              Select Location on Map
-            </label>
-
-            <LocationPicker
-              onSelect={(coords) => {
-                setLocation({
-                  lat: coords[0],
-                  lng: coords[1],
-                });
-              }}
-            />
-
-            {location && (
-              <p className="text-sm text-gray-500 mt-2">
-                Selected: {location.lat}, {location.lng}
-              </p>
-            )}
+          <div className="mt-4 text-center">
+            <span className="inline-block bg-blue-500/20 text-blue-300 text-xs px-3 py-1 rounded-full font-medium tracking-wide">
+              {authUser?.role || 'USER'}
+            </span>
+            <p className="text-gray-400 text-sm mt-1">{authUser?.email}</p>
           </div>
         </div>
-      </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Input
+            label="Full Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            placeholder="John Doe"
+          />
+          
+          <Input
+            label="Phone Number"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+1 234 567 890"
+          />
+          
+          <Input
+            label="City"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="New York"
+          />
+
+          <div className="pt-4">
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              loading={saving}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </GlassCard>
     </div>
   );
-}
+};
+
+export default Profile;

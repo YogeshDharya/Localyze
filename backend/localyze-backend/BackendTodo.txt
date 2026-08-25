@@ -1,8 +1,0 @@
-api gateway old dependency 
- <dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
-</dependency>
-
-payment service 
- need to ensure that client doesn't send the final payment to the razor pay backend 
