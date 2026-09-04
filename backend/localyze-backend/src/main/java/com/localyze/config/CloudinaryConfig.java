@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Cloudinary SDK configuration for image uploads.
- */
 @Configuration
 public class CloudinaryConfig {
 

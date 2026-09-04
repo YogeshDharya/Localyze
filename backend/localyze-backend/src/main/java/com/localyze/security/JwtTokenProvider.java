@@ -36,14 +36,10 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
-
-
-    /** Generate an access token for the given user. */
     public String generateAccessToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails, accessTokenExpiry);
     }
 
-    /** Generate a refresh token for the given user. */
     public String generateRefreshToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails, refreshTokenExpiry);
     }

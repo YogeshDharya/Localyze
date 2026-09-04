@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Manages booking lifecycle: creation, status transitions,
- * cancellation, and retrieval for both users and sellers.
- */
+
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -36,15 +33,7 @@ public class BookingService {
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
 
-    /**
-     * Creates a new booking for the authenticated user.
-     *
-     * @param userEmail the booking user's email
-     * @param request   the booking request
-     * @return the created booking response
-     * @throws BadRequestException       if the service is deleted/unavailable
-     * @throws ResourceNotFoundException if the user or service does not exist
-     */
+
     @Transactional
     public BookingResponse createBooking(String userEmail, BookingRequest request) {
         User user = userRepository.findByEmail(userEmail)
@@ -70,16 +59,7 @@ public class BookingService {
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
-    /**
-     * Retrieves paginated bookings for the authenticated user,
-     * optionally filtered by status.
-     *
-     * @param userEmail the user's email
-     * @param status    optional booking status filter
-     * @param page      page number (0-based)
-     * @param size      page size
-     * @return paginated booking responses
-     */
+
     @Transactional(readOnly = true)
     public PagedResponse<BookingResponse> getUserBookings(String userEmail, String status, int page, int size) {
         User user = userRepository.findByEmail(userEmail)
@@ -98,15 +78,6 @@ public class BookingService {
         return buildPagedResponse(bookingPage);
     }
 
-    /**
-     * Retrieves paginated bookings for the authenticated seller.
-     *
-     * @param sellerEmail the seller's email
-     * @param status      optional booking status filter (reserved for future use)
-     * @param page        page number (0-based)
-     * @param size        page size
-     * @return paginated booking responses
-     */
     @Transactional(readOnly = true)
     public PagedResponse<BookingResponse> getSellerBookings(String sellerEmail, String status, int page, int size) {
         User seller = userRepository.findByEmail(sellerEmail)
@@ -124,15 +95,6 @@ public class BookingService {
         return buildPagedResponse(bookingPage);
     }
 
-    /**
-     * Retrieves a single booking by ID. Only the booking user or seller can view it.
-     *
-     * @param id        the booking ID
-     * @param userEmail the authenticated user's email
-     * @return the booking response
-     * @throws UnauthorizedException     if the user has no access to this booking
-     * @throws ResourceNotFoundException if the booking does not exist
-     */
     @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id, String userEmail) {
         Booking booking = bookingRepository.findById(id)
@@ -147,17 +109,7 @@ public class BookingService {
         return bookingMapper.toResponse(booking);
     }
 
-    /**
-     * Updates a booking's status. Only the seller can advance the status
-     * through the valid transition chain: PENDING → CONFIRMED → IN_PROGRESS → COMPLETED.
-     *
-     * @param id        the booking ID
-     * @param status    the new status
-     * @param userEmail the authenticated user's email (must be the seller)
-     * @return the updated booking response
-     * @throws BadRequestException   if the status transition is invalid
-     * @throws UnauthorizedException if the user is not the seller
-     */
+
     @Transactional
     public BookingResponse updateBookingStatus(Long id, String status, String userEmail) {
         Booking booking = bookingRepository.findById(id)
@@ -184,17 +136,7 @@ public class BookingService {
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
-    /**
-     * Cancels a booking. Both the booking user and the seller can cancel,
-     * unless the booking is already completed or cancelled.
-     *
-     * @param id        the booking ID
-     * @param reason    the cancellation reason
-     * @param userEmail the authenticated user's email
-     * @return the cancelled booking response
-     * @throws BadRequestException   if the booking is completed or already cancelled
-     * @throws UnauthorizedException if the user has no access to this booking
-     */
+
     @Transactional
     public BookingResponse cancelBooking(Long id, String reason, String userEmail) {
         Booking booking = bookingRepository.findById(id)
@@ -219,9 +161,7 @@ public class BookingService {
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 
-    /**
-     * Builds a PagedResponse from a Page of Bookings.
-     */
+
     private PagedResponse<BookingResponse> buildPagedResponse(Page<Booking> bookingPage) {
         List<BookingResponse> content = bookingPage.getContent().stream()
                 .map(bookingMapper::toResponse)
