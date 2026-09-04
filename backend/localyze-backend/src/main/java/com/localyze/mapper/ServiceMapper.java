@@ -9,29 +9,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Maps ServiceEntity to ServiceResponse DTO.
- */
+
 @Component
 public class ServiceMapper {
 
-    /**
-     * Converts a ServiceEntity to a ServiceResponse DTO.
-     *
-     * @param service the service entity
-     * @return the service response DTO
-     */
+
     public ServiceResponse toResponse(ServiceEntity service) {
         return toResponse(service, null);
     }
 
-    /**
-     * Converts a ServiceEntity to a ServiceResponse DTO with distance for nearby search results.
-     *
-     * @param service  the service entity
-     * @param distance the calculated distance in km (nullable)
-     * @return the service response DTO with distance
-     */
     public ServiceResponse toResponse(ServiceEntity service, Double distance) {
         List<String> imageUrls = service.getImages() != null
                 ? service.getImages().stream()

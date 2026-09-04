@@ -9,9 +9,7 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * CORS configuration allowing the frontend to communicate with the backend.
- */
+
 @Configuration
 public class CorsConfig {
 

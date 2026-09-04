@@ -28,10 +28,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Integrates with Razorpay for payment processing.
- * Handles order creation, signature verification, and payment status tracking.
- */
 @Service
 @RequiredArgsConstructor
 public class RazorpayService {
@@ -47,16 +43,6 @@ public class RazorpayService {
     @Value("${razorpay.key-secret}")
     private String razorpayKeySecret;
 
-    /**
-     * Creates a Razorpay order for the given booking and persists the payment record.
-     * Amount is derived from the booking's associated service price.
-     *
-     * @param bookingId the booking ID to create payment for
-     * @param userEmail the authenticated user's email
-     * @return the created payment response with Razorpay order ID
-     * @throws BadRequestException       if a payment already exists for this booking
-     * @throws ResourceNotFoundException if the booking or user does not exist
-     */
     @Transactional
     public PaymentResponse createOrder(Long bookingId, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
@@ -99,14 +85,6 @@ public class RazorpayService {
         }
     }
 
-    /**
-     * Verifies a Razorpay payment using HMAC-SHA256 signature verification.
-     * On success, updates the payment status to PAID and advances the booking to CONFIRMED.
-     *
-     * @param request the payment verification request containing orderId, paymentId, and signature
-     * @return the updated payment response
-     * @throws BadRequestException if the payment is not found or signature verification fails
-     */
     @Transactional
     public PaymentResponse verifyPayment(PaymentVerificationRequest request) {
         Payment payment = paymentRepository.findByRazorpayOrderId(request.getRazorpayOrderId())
@@ -138,25 +116,12 @@ public class RazorpayService {
         return paymentMapper.toResponse(paymentRepository.save(payment));
     }
 
-    /**
-     * Retrieves the payment details for a specific booking.
-     *
-     * @param bookingId the booking ID
-     * @return the payment response
-     * @throws ResourceNotFoundException if no payment exists for the booking
-     */
     public PaymentResponse getPaymentByBookingId(Long bookingId) {
         Payment payment = paymentRepository.findByBookingId(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "bookingId", bookingId));
         return paymentMapper.toResponse(payment);
     }
 
-    /**
-     * Retrieves all payments for the authenticated user.
-     *
-     * @param userEmail the user's email
-     * @return list of payment responses
-     */
     public List<PaymentResponse> getUserPayments(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", userEmail));
@@ -165,13 +130,6 @@ public class RazorpayService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Generates an HMAC-SHA256 signature for Razorpay payment verification.
-     *
-     * @param data the data to sign (orderId|paymentId)
-     * @param key  the Razorpay key secret
-     * @return the hex-encoded HMAC signature
-     */
     private String generateSignature(String data, String key) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

@@ -28,10 +28,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Handles service listing CRUD operations, nearby search using the
- * Haversine formula, and advanced filtering/sorting/pagination.
- */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,20 +39,6 @@ public class ServiceService {
     private final ServiceImageRepository serviceImageRepository;
     private final ServiceMapper serviceMapper;
 
-    /**
-     * Retrieves a paginated list of active services with optional filters.
-     *
-     * @param categoryId optional category filter
-     * @param search     optional text search (title/description)
-     * @param minPrice   optional minimum price filter
-     * @param maxPrice   optional maximum price filter
-     * @param minRating  optional minimum rating filter
-     * @param sortBy     field to sort by (default: createdAt)
-     * @param sortDir    sort direction (asc/desc)
-     * @param page       page number (0-based)
-     * @param size       page size
-     * @return paginated service responses
-     */
     public PagedResponse<ServiceResponse> getAllServices(
             Long categoryId, String search, Double minPrice, Double maxPrice,
             Double minRating, String sortBy, String sortDir, int page, int size) {
@@ -107,19 +89,6 @@ public class ServiceService {
                 .build();
     }
 
-    /**
-     * Finds active services within a given radius using the Haversine formula.
-     *
-     * @param lat        search center latitude
-     * @param lng        search center longitude
-     * @param radius     search radius in kilometers
-     * @param categoryId optional category filter
-     * @param minPrice   optional minimum price filter
-     * @param maxPrice   optional maximum price filter
-     * @param minRating  optional minimum rating filter
-     * @param sortBy     sort field (price, rating, or distance)
-     * @return list of nearby service responses sorted by the specified field
-     */
     public List<ServiceResponse> getNearbyServices(
             double lat, double lng, double radius,
             Long categoryId, Double minPrice, Double maxPrice, Double minRating,
@@ -166,13 +135,6 @@ public class ServiceService {
         return nearby;
     }
 
-    /**
-     * Retrieves a single service by ID.
-     *
-     * @param id the service ID
-     * @return the service response
-     * @throws ResourceNotFoundException if the service does not exist or is deleted
-     */
     public ServiceResponse getServiceById(Long id) {
         ServiceEntity service = serviceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Service", "id", id));
@@ -182,16 +144,6 @@ public class ServiceService {
         return serviceMapper.toResponse(service);
     }
 
-    /**
-     * Creates a new service listing for the authenticated seller.
-     *
-     * @param sellerEmail the seller's email
-     * @param request     the service creation request
-     * @return the created service response
-     * @throws UnauthorizedException     if the user is not a seller or admin
-     * @throws ResourceNotFoundException if the category does not exist
-     * @throws BadRequestException       if more than 5 images are provided
-     */
     @Transactional
     public ServiceResponse createService(String sellerEmail, ServiceRequest request) {
         User seller = userRepository.findByEmail(sellerEmail)
@@ -241,18 +193,6 @@ public class ServiceService {
         return serviceMapper.toResponse(service);
     }
 
-    /**
-     * Updates an existing service listing. Only non-null fields are updated.
-     * Images are replaced entirely if provided.
-     *
-     * @param id          the service ID
-     * @param sellerEmail the authenticated seller's email
-     * @param request     the service update request
-     * @return the updated service response
-     * @throws UnauthorizedException     if the user does not own the service
-     * @throws ResourceNotFoundException if the service or category does not exist
-     * @throws BadRequestException       if more than 5 images are provided
-     */
     @Transactional
     public ServiceResponse updateService(Long id, String sellerEmail, ServiceRequest request) {
         ServiceEntity service = serviceRepository.findById(id)
@@ -295,14 +235,6 @@ public class ServiceService {
         return serviceMapper.toResponse(serviceRepository.save(service));
     }
 
-    /**
-     * Soft-deletes a service by marking it as deleted and inactive.
-     *
-     * @param id          the service ID
-     * @param sellerEmail the authenticated seller's email
-     * @throws UnauthorizedException     if the user does not own the service
-     * @throws ResourceNotFoundException if the service does not exist
-     */
     @Transactional
     public void deleteService(Long id, String sellerEmail) {
         ServiceEntity service = serviceRepository.findById(id)
@@ -317,14 +249,6 @@ public class ServiceService {
         serviceRepository.save(service);
     }
 
-    /**
-     * Retrieves a paginated list of the authenticated seller's own services.
-     *
-     * @param sellerEmail the seller's email
-     * @param page        page number (0-based)
-     * @param size        page size
-     * @return paginated service responses
-     */
     public PagedResponse<ServiceResponse> getMyServices(String sellerEmail, int page, int size) {
     		System.out.println(sellerEmail);
         User seller = userRepository.findByEmail(sellerEmail)
@@ -347,14 +271,6 @@ public class ServiceService {
                 .build();
     }
 
-    /**
-     * Retrieves a paginated list of services for a given seller (public view).
-     *
-     * @param sellerId the seller's user ID
-     * @param page     page number (0-based)
-     * @param size     page size
-     * @return paginated service responses
-     */
     public PagedResponse<ServiceResponse> getSellerServices(Long sellerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ServiceEntity> servicePage = serviceRepository.findBySellerIdAndIsDeletedFalse(sellerId, pageable);
