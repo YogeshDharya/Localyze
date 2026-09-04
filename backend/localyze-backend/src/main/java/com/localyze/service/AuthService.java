@@ -28,10 +28,6 @@ import com.localyze.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * Handles all authentication-related operations including registration,
- * login, token refresh, email verification, and password reset.
- */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -44,15 +40,6 @@ public class AuthService {
     private final EmailService emailService;
     private final UserMapper userMapper;
 
-    /**
-     * Registers a new user and returns JWT tokens.
-     * Sends a verification email asynchronously.
-     * In development mode, the user is auto-verified.
-     *
-     * @param request the registration request containing user details
-     * @return authentication response with access and refresh tokens
-     * @throws DuplicateResourceException if email or phone is already registered
-     */
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -86,13 +73,6 @@ public class AuthService {
         eventProducer.publish(event);
         
        
-//        try {
-//            emailService.sendVerificationEmail(user.getEmail(), user.getFullName(), verificationToken);
-//        } catch (Exception e) {
-//            // Log but don't fail registration
-//        }
-
-        // For development, auto-verify and return tokens
         user.setVerified(true);
         userRepository.save(user);
 
@@ -107,13 +87,6 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Authenticates a user with email and password, returning JWT tokens.
-     *
-     * @param request the login request containing credentials
-     * @return authentication response with access and refresh tokens
-     * @throws UnauthorizedException if account is deactivated
-     */
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -137,13 +110,6 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Generates new access and refresh tokens using a valid refresh token.
-     *
-     * @param refreshToken the current refresh token
-     * @return authentication response with new tokens
-     * @throws UnauthorizedException if the refresh token is invalid or expired
-     */
     public AuthResponse refreshToken(String refreshToken) {
         try {
             String email = jwtTokenProvider.extractUsername(refreshToken);
@@ -170,13 +136,6 @@ public class AuthService {
         }
     }
 
-    /**
-     * Verifies a user's email using the verification token.
-     *
-     * @param token the email verification token
-     * @return success message
-     * @throws BadRequestException if the token is invalid
-     */
     @Transactional
     public String verifyEmail(String token) {
         User user = userRepository.findByVerificationToken(token)
@@ -187,13 +146,6 @@ public class AuthService {
         return "Email verified successfully";
     }
 
-    /**
-     * Initiates the password reset flow by generating a reset token and sending an email.
-     *
-     * @param request the forgot password request containing the user's email
-     * @return success message
-     * @throws ResourceNotFoundException if no user exists with the given email
-     */
     @Transactional
     public String forgotPassword(ForgotPasswordRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -213,13 +165,7 @@ public class AuthService {
         return "Password reset email sent";
     }
 
-    /**
-     * Resets the user's password using a valid reset token.
-     *
-     * @param request the password reset request containing the token and new password
-     * @return success message
-     * @throws BadRequestException if the token is invalid or expired
-     */
+
     @Transactional
     public String resetPassword(PasswordResetRequest request) {
         User user = userRepository.findByResetToken(request.getToken())

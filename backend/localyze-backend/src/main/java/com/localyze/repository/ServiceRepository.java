@@ -21,14 +21,6 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
 
     Page<ServiceEntity> findByStatusAndIsDeletedFalse(ServiceStatus status, Pageable pageable);
 
-    /**
-     * Find nearby services using the Haversine formula.
-     *
-     * @param lat    latitude of the search center
-     * @param lng    longitude of the search center
-     * @param radius search radius in kilometers
-     * @return list of Object arrays containing service columns and calculated distance
-     */
     @Query(value = "SELECT s.*, " +
             "(6371 * acos(cos(radians(:lat)) * cos(radians(s.latitude)) * " +
             "cos(radians(s.longitude) - radians(:lng)) + " +

@@ -1,8 +1,5 @@
 package com.localyze.util;
 
-/**
- * Utility class for geographic calculations.
- */
 public final class GeoUtils {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
@@ -11,16 +8,6 @@ public final class GeoUtils {
         // Prevent instantiation
     }
 
-    /**
-     * Calculates the great-circle distance between two points on Earth
-     * using the Haversine formula.
-     *
-     * @param lat1 latitude of point 1 in degrees
-     * @param lon1 longitude of point 1 in degrees
-     * @param lat2 latitude of point 2 in degrees
-     * @param lon2 longitude of point 2 in degrees
-     * @return distance in kilometers
-     */
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);

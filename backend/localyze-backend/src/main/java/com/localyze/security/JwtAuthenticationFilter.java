@@ -56,7 +56,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Token is invalid — don't set authentication, let the request proceed unauthenticated
             logger.error("Cannot set user authentication: " + e.getMessage());
         }
 
