@@ -1,35 +1,56 @@
-export const formatPrice = (price, unit) => {
-  if (price == null) return '';
-  const formattedPrice = `₹${price}`;
-  if (!unit || unit === 'fixed') return `${formattedPrice} fixed`;
-  if (unit === 'per_hour') return `${formattedPrice} / hr`;
-  if (unit === 'per_visit') return `${formattedPrice} / visit`;
-  if (unit === 'per_day') return `${formattedPrice} / day`;
-  return `${formattedPrice} ${unit}`;
+export const formatPrice = (price) => {
+  if (price == null) return '₹0';
+  return '₹' + Number(price).toLocaleString('en-IN');
 };
 
-export const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+export const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 };
 
-export const formatDateTime = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  return date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+export const formatDateTime = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
-export const truncate = (str, len = 100) => {
-  if (!str) return '';
-  if (str.length <= len) return str;
-  return str.substring(0, len) + '...';
+export const formatDistance = (km) => {
+  if (km == null) return '';
+  if (km < 1) return `${Math.round(km * 1000)}m`;
+  return `${km.toFixed(1)}km`;
 };
 
-export const getInitials = (name) => {
-  if (!name) return '';
-  const parts = name.trim().split(' ').filter(Boolean);
-  if (parts.length === 0) return '';
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+export const formatRating = (rating) => {
+  if (rating == null) return '0.0';
+  return Number(rating).toFixed(1);
+};
+
+export const timeAgo = (dateString) => {
+  if (!dateString) return '';
+  const now = new Date();
+  const date = new Date(dateString);
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return formatDate(dateString);
+};
+
+export const truncateText = (text, maxLength = 100) => {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 };

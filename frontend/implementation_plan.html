@@ -1,0 +1,2534 @@
+<!DOCTYPE html><html><head>
+      <title>implementation_plan</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+      
+      
+      
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.min.js"></script>
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.markdown-preview a.tag,.markdown-preview a.tag:active,.markdown-preview a.tag:link,.markdown-preview a.tag:visited,.markdown-preview span.tag:not(.token){display:inline-block;background-color:var(--vscode-badge-background,rgba(127,127,127,.18));color:var(--vscode-badge-foreground,currentColor);border-radius:2em;font-size:.85em;font-weight:500;padding:.05em .55em;line-height:1.5;white-space:nowrap;text-decoration:none;text-shadow:none;box-shadow:none;transition:background-color .12s ease,opacity .12s ease}.markdown-preview a.tag{cursor:pointer}.markdown-preview a.tag:focus,.markdown-preview a.tag:hover{background-color:var(--vscode-badge-background,rgba(127,127,127,.32));color:var(--vscode-badge-foreground,currentColor);opacity:.85;text-decoration:none;outline:0}.markdown-preview .wikilink-embed-content{border-left:3px solid var(--vscode-textBlockQuote-border,rgba(128,128,128,.3));background:var(--vscode-textBlockQuote-background,rgba(128,128,128,.05));margin:.5em 0;padding:.5em .75em;border-radius:0 3px 3px 0}.markdown-preview .wikilink-embed-content.wikilink-embed-error{border-left-color:var(--vscode-errorForeground,#cf222e);color:var(--vscode-errorForeground,#cf222e);font-style:italic;opacity:.8}.markdown-preview .wikilink-embed-content h1:first-child,.markdown-preview .wikilink-embed-content h2:first-child,.markdown-preview .wikilink-embed-content h3:first-child,.markdown-preview .wikilink-embed-content h4:first-child,.markdown-preview .wikilink-embed-content h5:first-child,.markdown-preview .wikilink-embed-content h6:first-child{margin-top:.25em}.markdown-preview .wikilink-embed-content .wikilink-embed-content{margin:.25em 0;padding:.25em .5em}.markdown-preview .block-id{display:none}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));border:4px solid var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));background-clip:content-box}.scrollbar-style::-webkit-scrollbar-thumb:hover{background-color:var(--vscode-scrollbarSlider-hoverBackground,rgba(120,120,120,.66))}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));border:4px solid var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb:hover{background-color:var(--vscode-scrollbarSlider-hoverBackground,rgba(120,120,120,.66))}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}@font-face{font-family:"Material Icons";font-style:normal;font-weight:400;src:local("Material Icons"),local("MaterialIcons-Regular"),url("data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAfIAAsAAAAADDAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAADMAAABCsP6z7U9TLzIAAAE8AAAARAAAAFZW7kosY21hcAAAAYAAAADTAAACjtP6ytBnbHlmAAACVAAAAxgAAAQ4zRtvlGhlYWQAAAVsAAAALwAAADYRwZsnaGhlYQAABZwAAAAcAAAAJAeKAzxobXR4AAAFuAAAABIAAAA8OGQAAGxvY2EAAAXMAAAAIAAAACAG5AfwbWF4cAAABewAAAAfAAAAIAEfAERuYW1lAAAGDAAAAVcAAAKFkAhoC3Bvc3QAAAdkAAAAYgAAAK2vz7wkeJxjYGRgYOBikGPQYWB0cfMJYeBgYGGAAJAMY05meiJQDMoDyrGAaQ4gZoOIAgCKIwNPAHicY2BkPsQ4gYGVgYOpk+kMAwNDP4RmfM1gxMjBwMDEwMrMgBUEpLmmMDgwVLy4xKzzX4chhrmK4QpQmBEkBwAZygyweJzFkr0NwjAQhZ+TEP6CRUfHBEwRUWaQTICyQbpMwRCskA5RUIONxG0RnnNpKAIV4qzPku/8c353ACYAYrIjCWCuMAh2ptf0/hiL3p/gyPUWa3osqlt0L1zu9r71z8dGrJRykFoauXQd932Lj5vhG+MjxGeYI8MKETObMpslf5EyP8tg+vHun5r539PvlvXzaVhRFVQDTPEWKVQR90KhnnC5Ek67vUKN4VuFasM/ldARj43CCkCsEjpJSoVVgRyU0GVSK6wUpFFCx8lFgX0BiXpRPQB4nE2TTWjcRhTH3xttpDhxN7uxPlp3u/FK7moRPixafRijNosxSw/LUsIwNcaEHPZggo/FmEKMCKWU4kNOOftQSlhE8alnH0Ix9BqWnHooPRrTQ0+mnu2bXTu2pPdGM9LM/6c3fwECTM4gBBMYQNqxzLrZAjqYSlqu2TAHZQA0/DQJH6FtzqGDnvbt4Ggwvzw/nL8EfH8kW0fsuRqhgWXZnY7M1picaUL7Du5BHeDzMIl83dAt016wH1qmvtSMo5R6YRJHTR//FXsff/nj/tc/5K9P5d+nP22+fFK5u7v3K39SW3y+OtDKO3L85vD09PD9z5X17a2N1g4tqk01RlqX7gyoEmnsWQtVr4rtZMmukEaFBZxzefkCn11cyKMLZgshRwgTYNoLNXCBz2ja7HvZG7hDpPSNfoo5vs0knK/9hb+rNpu+8kHPgk/Ao4kK3tWtTpSEtvkA9c+wE6UaUdwieNkaHg55tBEtRiEPw1s0+FtrtTcc9two2lhMknV7PZF/cs6+uUFTmpTGbEx7sQCPSLOttHS3GRltqp7SNzVSKzl6aWnZT/CX5k6/v9N3Hh8fHBwffJVjhrC6OgH5dkIt/tPsq+d/PD5Qz7G7efzq1THFjdZVPe/N6ulQ3JnDWSE5junsFsVIiFwL/htf1S5gJ3BfOcUxfHKLnzqpFpyfZ9cX+/5WB6a+Y0pHpzkNrYNVDwMsikK+y7WuLCRg/oFHkA8VT3rDg5ZnU6ktzzINymV0m74Xd5pfIGXyFeVEQSShkzqG7TBBa2OxVRKitLXv7h3uuftXnXq7lz2tZ/WnWa9dx9dCjDhHzmuVQATlmljr9dZErUydSo2Hbi/b1vXtrOeGCk2/8s3ZlO8+ueJT8BVlw5pGw2oYccdSiHHqx0RlabHqdNR9jAETl6PreJcPBnnfpTLnOQ8C3OV8AmQGzouV1iZdeb5SSIoVc8W8/kcDtksUH5FrU6/aqBqNWcMEzxG4DAQ14qRQhi9mWU0rzepKezbjfgCwQKxVYq5ajRgpRqy45CqwkJydcEkbTkvRz8P5/2ZpDTN4nGNgZGBgAOKb6v+/xvPbfGXgZmEAgeuB2kkI+v8bFgbmKiCXg4EJJAoAPyAKhQB4nGNgZGBg1vmvwxDDwgACQJKRARXwAwAzZQHQeJxjYQCCFAYGFgbSMQAcWACdAAAAAAAAAAwALgBgAIQAmADSAQgBIgE8AVABoAHeAfwCHHicY2BkYGDgZ7BgYGMAASYg5gJCBob/YD4DAA/hAWQAeJxlkbtuwkAURMc88gApQomUJoq0TdIQzEOpUDokKCNR0BuzBiO/tF6QSJcPyHflE9Klyyekz2CuG8cr7547M3d9JQO4xjccnJ57vid2cMHqxDWc40G4Tv1JuEF+Fm6ijRfhM+oz4Ra6eBVu4wZvvMFpXLIa40PYQQefwjVc4Uu4Tv1HuEH+FW7i1mkKn6Hj3Am3sHC6wm08Ou8tpSZGe1av1PKggjSxPd8zJtSGTuinyVGa6/Uu8kxZludCmzxMEzV0B6U004k25W35fj2yNlCBSWM1paujKFWZSbfat+7G2mzc7weiu34aczzFNYGBhgfLfcV6iQP3ACkSaj349AxXSN9IT0j16JepOb01doiKbNWt1ovippz6sVYYwsXgX2rGVFIkq7Pl2PNrI6qW6eOshj0xaSq9mpNEZIWs8LZUfOouNkVXxp/d5woqebeYIf4D2J1ywQB4nG3LOw6AIBAE0B384B+PAkgEa+QwNnYmHt+EpXSal5lkSBBnoP8oCFSo0aCFRIceA0ZMmLFAYSW88rmvtMUjG3RiQ9HvpfusM6zWNmtc5H/iPewha50tOt5PS/QBx2IeSwAA") format("woff")}.callout{--callout-color:68,138,255;position:relative;overflow:hidden;border-radius:4px;margin:1rem 0;padding:.75rem 1rem;background:rgba(var(--callout-color),.1)}.callout>.callout-title{margin:0 -1.2rem;padding:0 1.2rem 0 3.3rem;font-weight:700;color:rgb(var(--callout-color))}.callout .callout-title::before{position:absolute;left:1.2rem;font-size:1.2rem;font-family:Material Icons;font-style:normal;font-variant:normal;font-weight:400;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;color:rgba(var(--callout-color),.8);content:var(--callout-icon, "i")}.callout>p{margin-block-start:1rem;margin-block-end:1rem;padding-left:.4rem}.callout details.callout-title,.callout summary.callout-title{cursor:pointer;list-style:none}.callout summary.callout-title::-webkit-details-marker{display:none}details.callout>summary.callout-title::after{display:inline-block;width:.45em;height:.45em;margin-left:1em;border-right:2px solid rgb(var(--callout-color));border-bottom:2px solid rgb(var(--callout-color));transform:translateY(-.05em) rotate(-45deg);transition:transform 160ms ease,opacity 160ms ease;opacity:.9;content:""}details.callout[open]>summary.callout-title::after{transform:translateY(-.05em) rotate(45deg);opacity:1}.callout[data-callout=abstract],.callout[data-callout=summary],.callout[data-callout=tldr]{--callout-color:0,191,188;--callout-icon:"\E8D2"}.callout[data-callout=note]{--callout-color:8,109,221;--callout-icon:"\E3C9"}.callout[data-callout=info]{--callout-color:8,109,221;--callout-icon:"\E88E"}.callout[data-callout=todo]{--callout-color:8,109,221;--callout-icon:"\E88E"}.callout[data-callout=hint],.callout[data-callout=important],.callout[data-callout=tip]{--callout-color:0,191,188;--callout-icon:"\E80E"}.callout[data-callout=check],.callout[data-callout=done],.callout[data-callout=success]{--callout-color:8,185,78;--callout-icon:"\E876"}.callout[data-callout=faq],.callout[data-callout=help],.callout[data-callout=question]{--callout-color:236,117,0;--callout-icon:"\E887"}.callout[data-callout=attention],.callout[data-callout=caution],.callout[data-callout=warning]{--callout-color:236,117,0;--callout-icon:"\E002"}.callout[data-callout=fail],.callout[data-callout=failure],.callout[data-callout=missing]{--callout-color:233,49,71;--callout-icon:"\E14C"}.callout[data-callout=danger],.callout[data-callout=error]{--callout-color:233,49,71;--callout-icon:"\E3E7"}.callout[data-callout=bug]{--callout-color:233,49,71;--callout-icon:"\E868"}.callout[data-callout=example]{--callout-color:120,82,238;--callout-icon:"\E242"}.callout[data-callout=cite],.callout[data-callout=quote]{--callout-color:158,158,158;--callout-icon:"\E244"}.callout .callout{margin:.75rem 0}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. -->
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="localyze--full-stack-implementation-plan">Localyze — Full-Stack Implementation Plan </h1>
+<blockquote>
+<p><strong>Discover Local. Support Local.</strong><br>
+A platform for small/home-operated businesses to present their services and for users to discover nearby services within a configurable radius.</p>
+</blockquote>
+<hr>
+<h2 id="table-of-contents">Table of Contents </h2>
+<ol>
+<li><a href="#1-project-structure">Project Structure</a></li>
+<li><a href="#2-database-design">Database Design</a></li>
+<li><a href="#3-api-design">API Design</a></li>
+<li><a href="#4-authentication--security">Authentication &amp; Security</a></li>
+<li><a href="#5-backend-implementation">Backend Implementation</a></li>
+<li><a href="#6-frontend-implementation">Frontend Implementation</a></li>
+<li><a href="#7-screens--navigation">Screens &amp; Navigation</a></li>
+<li><a href="#8-search--discovery">Search &amp; Discovery</a></li>
+<li><a href="#9-business-rules">Business Rules</a></li>
+<li><a href="#10-validation-rules">Validation Rules</a></li>
+<li><a href="#11-error-handling">Error Handling</a></li>
+<li><a href="#12-file-uploads">File Uploads</a></li>
+<li><a href="#13-admin-panel">Admin Panel</a></li>
+<li><a href="#14-third-party-integrations">Third-Party Integrations</a></li>
+<li><a href="#15-performance--caching">Performance &amp; Caching</a></li>
+<li><a href="#16-uiux-design-system">UI/UX Design System</a></li>
+<li><a href="#17-logging">Logging</a></li>
+<li><a href="#18-deployment">Deployment</a></li>
+<li><a href="#19-execution-phases">Execution Phases</a></li>
+<li><a href="#20-acceptance-criteria">Acceptance Criteria</a></li>
+</ol>
+<hr>
+<h2 id="user-review-required">User Review Required </h2>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p><strong>Google Maps API Key</strong>: You will need a Google Maps JavaScript API key with the Maps JavaScript API and Geocoding API enabled. Please provide this key before Phase 5 (Frontend integration).</p>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p><strong>Razorpay API Keys</strong>: You will need Razorpay key_id and key_secret for payment integration. Please provide these before implementing the payment module.</p>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p><strong>Cloudinary Credentials</strong>: You will need Cloudinary cloud_name, api_key, and api_secret for image uploads. Please provide these before Phase 3 (File Upload service).</p>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p><strong>Email SMTP Configuration</strong>: You will need SMTP credentials (e.g., Gmail app password) for JavaMail email verification. Please provide these before implementing email verification.</p>
+</div>
+<div class="callout" data-callout="warning">
+<div class="callout-title">Warning</div>
+<p><strong>Chat Feature</strong>: The PRD mentions "after booking can chat with seller" in User Roles but lists "Real-time chat" as Out of Scope. I will implement a <strong>simple message/inquiry system</strong> (not real-time WebSocket chat) where users can send text messages to sellers after booking, and sellers can reply. This will use REST polling, not WebSocket. If you want full real-time chat, that would need WebSocket/STOMP which is significantly more complex.</p>
+</div>
+<div class="callout" data-callout="tip">
+<div class="callout-title">Tip</div>
+<p><strong>Payment Integration</strong>: Full Razorpay integration will be implemented — order creation, payment verification, and status tracking. Users will pay after booking confirmation.</p>
+</div>
+<h2 id="open-questions">Open Questions </h2>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+
+<ol>
+<li><strong>Service Moderation</strong>: Should new services be auto-published or require admin approval before appearing in search results? The PRD mentions "after approval (if moderation is required)" — please confirm.</li>
+</ol>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p>2. <strong>Business Profile Approval</strong>: The PRD says "Business profile is approved" as a precondition. Should there be an admin approval workflow for new business registrations?</p>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p>3. <strong>Booking Flow</strong>: What does a "booking" look like? Is it:</p>
+<ul>
+<li>(A) A simple service request (user sends date/time preference, seller confirms/rejects), or</li>
+<li>(B) A slot-based booking (seller defines available time slots, user picks one)?</li>
+<li>I will default to <strong>(A)</strong> unless you specify otherwise.</li>
+</ul>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p>4. <strong>Reviews</strong>: Can users write reviews? The database design includes a <code>reviews</code> table but the PRD doesn't explicitly describe the review workflow. I will include review CRUD for users who have completed bookings.</p>
+</div>
+<div class="callout" data-callout="important">
+<div class="callout-title">Important</div>
+<p>5. <strong>Radius Configuration</strong>: The PRD mentions "within 1km" — should the radius be:</p>
+<ul>
+<li>Fixed at 1km?</li>
+<li>User-configurable (e.g., 1km, 2km, 5km, 10km dropdown)?</li>
+<li>I will default to <strong>user-configurable</strong> with 1km as the default.</li>
+</ul>
+</div>
+<hr>
+<h2 id="1-project-structure">1. Project Structure </h2>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>e:\AntigravityLocalyzev2\
+│
+├── docs/
+│   ├── PRD.md
+│   ├── API.md
+│   ├── DATABASE.md
+│   └── USER_STORIES.md
+│
+├── frontend/                          # React + Vite + Tailwind
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── .env
+│   ├── public/
+│   │   └── favicon.svg
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── index.css                  # Tailwind imports + global styles
+│       ├── assets/                    # Static assets (logo, images)
+│       ├── components/                # Shared/reusable components
+│       │   ├── ui/                    # Button, Input, Card, Modal, Toast, etc.
+│       │   ├── layout/               # Navbar, Sidebar, Footer
+│       │   └── map/                  # MapView, MapMarker
+│       ├── pages/                     # Route-level page components
+│       │   ├── Landing.jsx
+│       │   ├── Login.jsx
+│       │   ├── Register.jsx
+│       │   ├── ForgotPassword.jsx
+│       │   ├── ResetPassword.jsx
+│       │   ├── VerifyEmail.jsx
+│       │   ├── Dashboard.jsx          # User dashboard with map
+│       │   ├── ServiceDetails.jsx
+│       │   ├── BookingPage.jsx
+│       │   ├── MyBookings.jsx
+│       │   ├── Profile.jsx
+│       │   ├── Settings.jsx
+│       │   ├── seller/
+│       │   │   ├── SellerDashboard.jsx
+│       │   │   ├── AddService.jsx
+│       │   │   ├── EditService.jsx
+│       │   │   ├── MyServices.jsx
+│       │   │   ├── SellerBookings.jsx
+│       │   │   └── SellerProfile.jsx
+│       │   ├── admin/
+│       │   │   ├── AdminDashboard.jsx
+│       │   │   ├── ManageUsers.jsx
+│       │   │   ├── ManageServices.jsx
+│       │   │   └── ManageCategories.jsx
+│       │   └── NotFound.jsx
+│       ├── hooks/                     # Custom React hooks
+│       │   ├── useAuth.js
+│       │   ├── useGeolocation.js
+│       │   ├── useServices.js
+│       │   └── useDebounce.js
+│       ├── services/                  # API service layer (Axios)
+│       │   ├── api.js                 # Axios instance with interceptors
+│       │   ├── authService.js
+│       │   ├── serviceService.js
+│       │   ├── bookingService.js
+│       │   ├── userService.js
+│       │   ├── categoryService.js
+│       │   ├── reviewService.js
+│       │   └── uploadService.js
+│       ├── contexts/                  # React Context providers
+│       │   ├── AuthContext.jsx
+│       │   ├── ThemeContext.jsx
+│       │   └── LocationContext.jsx
+│       └── utils/                     # Utility functions
+│           ├── constants.js
+│           ├── validators.js
+│           ├── formatters.js
+│           └── helpers.js
+│
+├── backend/                           # Spring Boot 3
+│   ├── pom.xml
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/localyze/
+│   │   │   │   ├── LocalyzeApplication.java
+│   │   │   │   ├── controller/
+│   │   │   │   │   ├── AuthController.java
+│   │   │   │   │   ├── UserController.java
+│   │   │   │   │   ├── ServiceController.java
+│   │   │   │   │   ├── BookingController.java
+│   │   │   │   │   ├── CategoryController.java
+│   │   │   │   │   ├── ReviewController.java
+│   │   │   │   │   ├── UploadController.java
+│   │   │   │   │   ├── AdminController.java
+│   │   │   │   │   └── MessageController.java
+│   │   │   │   ├── service/
+│   │   │   │   │   ├── AuthService.java
+│   │   │   │   │   ├── UserService.java
+│   │   │   │   │   ├── ServiceService.java
+│   │   │   │   │   ├── BookingService.java
+│   │   │   │   │   ├── CategoryService.java
+│   │   │   │   │   ├── ReviewService.java
+│   │   │   │   │   ├── CloudinaryService.java
+│   │   │   │   │   ├── EmailService.java
+│   │   │   │   │   ├── AdminService.java
+│   │   │   │   │   └── MessageService.java
+│   │   │   │   ├── repository/
+│   │   │   │   │   ├── UserRepository.java
+│   │   │   │   │   ├── ServiceRepository.java
+│   │   │   │   │   ├── BookingRepository.java
+│   │   │   │   │   ├── CategoryRepository.java
+│   │   │   │   │   ├── ReviewRepository.java
+│   │   │   │   │   ├── ServiceImageRepository.java
+│   │   │   │   │   └── MessageRepository.java
+│   │   │   │   ├── entity/
+│   │   │   │   │   ├── User.java
+│   │   │   │   │   ├── ServiceEntity.java
+│   │   │   │   │   ├── ServiceImage.java
+│   │   │   │   │   ├── Booking.java
+│   │   │   │   │   ├── Category.java
+│   │   │   │   │   ├── Review.java
+│   │   │   │   │   ├── Message.java
+│   │   │   │   │   └── enums/
+│   │   │   │   │       ├── Role.java
+│   │   │   │   │       ├── BookingStatus.java
+│   │   │   │   │       └── ServiceStatus.java
+│   │   │   │   ├── dto/
+│   │   │   │   │   ├── request/
+│   │   │   │   │   │   ├── RegisterRequest.java
+│   │   │   │   │   │   ├── LoginRequest.java
+│   │   │   │   │   │   ├── ServiceRequest.java
+│   │   │   │   │   │   ├── BookingRequest.java
+│   │   │   │   │   │   ├── ReviewRequest.java
+│   │   │   │   │   │   ├── PasswordResetRequest.java
+│   │   │   │   │   │   ├── ForgotPasswordRequest.java
+│   │   │   │   │   │   ├── MessageRequest.java
+│   │   │   │   │   │   └── UpdateProfileRequest.java
+│   │   │   │   │   └── response/
+│   │   │   │   │       ├── AuthResponse.java
+│   │   │   │   │       ├── UserResponse.java
+│   │   │   │   │       ├── ServiceResponse.java
+│   │   │   │   │       ├── BookingResponse.java
+│   │   │   │   │       ├── ReviewResponse.java
+│   │   │   │   │       ├── CategoryResponse.java
+│   │   │   │   │       ├── MessageResponse.java
+│   │   │   │   │       ├── PagedResponse.java
+│   │   │   │   │       └── ApiResponse.java
+│   │   │   │   ├── mapper/
+│   │   │   │   │   ├── UserMapper.java
+│   │   │   │   │   ├── ServiceMapper.java
+│   │   │   │   │   ├── BookingMapper.java
+│   │   │   │   │   └── ReviewMapper.java
+│   │   │   │   ├── security/
+│   │   │   │   │   ├── JwtTokenProvider.java
+│   │   │   │   │   ├── JwtAuthenticationFilter.java
+│   │   │   │   │   ├── CustomUserDetailsService.java
+│   │   │   │   │   └── SecurityConfig.java
+│   │   │   │   ├── exception/
+│   │   │   │   │   ├── GlobalExceptionHandler.java
+│   │   │   │   │   ├── ResourceNotFoundException.java
+│   │   │   │   │   ├── BadRequestException.java
+│   │   │   │   │   ├── UnauthorizedException.java
+│   │   │   │   │   ├── DuplicateResourceException.java
+│   │   │   │   │   └── FileUploadException.java
+│   │   │   │   ├── config/
+│   │   │   │   │   ├── CorsConfig.java
+│   │   │   │   │   ├── CloudinaryConfig.java
+│   │   │   │   │   └── AppConfig.java
+│   │   │   │   └── util/
+│   │   │   │       └── GeoUtils.java
+│   │   │   └── resources/
+│   │   │       ├── application.yml
+│   │   │       └── application-dev.yml
+│   │   └── test/
+│   │       └── java/com/localyze/
+│   │           ├── LocalyzeApplicationTests.java
+│   │           ├── controller/
+│   │           ├── service/
+│   │           └── repository/
+│   └── .mvn/
+│
+├── database/
+│   ├── schema.sql
+│   └── seed.sql
+│
+└── postman/
+    └── Localyze.postman_collection.json
+</code></pre><hr>
+<h2 id="2-database-design">2. Database Design </h2>
+<h3 id="entity-relationship-diagram">Entity Relationship Diagram </h3>
+<div class="mermaid">erDiagram
+    USERS ||--o{ SERVICES : "owns"
+    USERS ||--o{ BOOKINGS : "makes"
+    USERS ||--o{ REVIEWS : "writes"
+    USERS ||--o{ MESSAGES : "sends"
+    SERVICES ||--o{ SERVICE_IMAGES : "has"
+    SERVICES ||--o{ BOOKINGS : "receives"
+    SERVICES ||--o{ REVIEWS : "has"
+    SERVICES }o--|| CATEGORIES : "belongs_to"
+    BOOKINGS ||--o{ MESSAGES : "has"
+
+    USERS {
+        bigint id PK
+        varchar full_name
+        varchar email UK
+        varchar phone UK
+        varchar password
+        enum role "USER, SELLER, ADMIN"
+        varchar profile_image_url
+        varchar address
+        decimal latitude
+        decimal longitude
+        boolean is_verified
+        boolean is_active
+        varchar verification_token
+        varchar reset_token
+        timestamp reset_token_expiry
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORIES {
+        bigint id PK
+        varchar name UK
+        varchar description
+        varchar icon_url
+        boolean is_active
+        timestamp created_at
+    }
+
+    SERVICES {
+        bigint id PK
+        bigint seller_id FK
+        bigint category_id FK
+        varchar title
+        text description
+        decimal price
+        varchar price_unit "per_hour, per_visit, fixed"
+        varchar address
+        decimal latitude
+        decimal longitude
+        varchar availability "Mon-Fri 9AM-6PM"
+        enum status "ACTIVE, INACTIVE, PENDING, REJECTED"
+        decimal avg_rating
+        int total_reviews
+        boolean is_deleted
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SERVICE_IMAGES {
+        bigint id PK
+        bigint service_id FK
+        varchar image_url
+        int display_order
+        timestamp created_at
+    }
+
+    BOOKINGS {
+        bigint id PK
+        bigint user_id FK
+        bigint service_id FK
+        bigint seller_id FK
+        enum status "PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED"
+        date booking_date
+        varchar time_slot
+        text notes
+        text cancellation_reason
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    REVIEWS {
+        bigint id PK
+        bigint user_id FK
+        bigint service_id FK
+        bigint booking_id FK UK
+        int rating "1-5"
+        text comment
+        boolean is_deleted
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    MESSAGES {
+        bigint id PK
+        bigint booking_id FK
+        bigint sender_id FK
+        bigint receiver_id FK
+        text content
+        boolean is_read
+        timestamp created_at
+    }
+</div><h3 id="table-details">Table Details </h3>
+<h4 id="users"><code>users</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>full_name</td>
+<td>VARCHAR(100)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL, UNIQUE</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>VARCHAR(15)</td>
+<td>NOT NULL, UNIQUE</td>
+</tr>
+<tr>
+<td>password</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>role</td>
+<td>ENUM('USER','SELLER','ADMIN')</td>
+<td>NOT NULL, DEFAULT 'USER'</td>
+</tr>
+<tr>
+<td>profile_image_url</td>
+<td>VARCHAR(500)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>address</td>
+<td>VARCHAR(500)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>latitude</td>
+<td>DECIMAL(10,8)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>longitude</td>
+<td>DECIMAL(11,8)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>is_verified</td>
+<td>BOOLEAN</td>
+<td>DEFAULT FALSE</td>
+</tr>
+<tr>
+<td>is_active</td>
+<td>BOOLEAN</td>
+<td>DEFAULT TRUE</td>
+</tr>
+<tr>
+<td>verification_token</td>
+<td>VARCHAR(255)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>reset_token</td>
+<td>VARCHAR(255)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>reset_token_expiry</td>
+<td>TIMESTAMP</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMP</td>
+<td>ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: <code>idx_users_email</code>, <code>idx_users_phone</code>, <code>idx_users_role</code></p>
+<h4 id="categories"><code>categories</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(100)</td>
+<td>NOT NULL, UNIQUE</td>
+</tr>
+<tr>
+<td>description</td>
+<td>VARCHAR(500)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>icon_url</td>
+<td>VARCHAR(500)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>is_active</td>
+<td>BOOLEAN</td>
+<td>DEFAULT TRUE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<h4 id="services"><code>services</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>seller_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>category_id</td>
+<td>BIGINT</td>
+<td>FK → categories(id), NOT NULL</td>
+</tr>
+<tr>
+<td>title</td>
+<td>VARCHAR(200)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>description</td>
+<td>TEXT</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>price</td>
+<td>DECIMAL(10,2)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>price_unit</td>
+<td>VARCHAR(20)</td>
+<td>DEFAULT 'fixed'</td>
+</tr>
+<tr>
+<td>address</td>
+<td>VARCHAR(500)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>latitude</td>
+<td>DECIMAL(10,8)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>longitude</td>
+<td>DECIMAL(11,8)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>availability</td>
+<td>VARCHAR(200)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM('ACTIVE','INACTIVE','PENDING','REJECTED')</td>
+<td>DEFAULT 'ACTIVE'</td>
+</tr>
+<tr>
+<td>avg_rating</td>
+<td>DECIMAL(2,1)</td>
+<td>DEFAULT 0.0</td>
+</tr>
+<tr>
+<td>total_reviews</td>
+<td>INT</td>
+<td>DEFAULT 0</td>
+</tr>
+<tr>
+<td>is_deleted</td>
+<td>BOOLEAN</td>
+<td>DEFAULT FALSE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMP</td>
+<td>ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: <code>idx_services_seller</code>, <code>idx_services_category</code>, <code>idx_services_status</code>, <code>idx_services_location</code> (latitude, longitude), <code>idx_services_price</code></p>
+<h4 id="service_images"><code>service_images</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>service_id</td>
+<td>BIGINT</td>
+<td>FK → services(id), NOT NULL</td>
+</tr>
+<tr>
+<td>image_url</td>
+<td>VARCHAR(500)</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>display_order</td>
+<td>INT</td>
+<td>DEFAULT 0</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<h4 id="bookings"><code>bookings</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>service_id</td>
+<td>BIGINT</td>
+<td>FK → services(id), NOT NULL</td>
+</tr>
+<tr>
+<td>seller_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM('PENDING','CONFIRMED','IN_PROGRESS','COMPLETED','CANCELLED')</td>
+<td>DEFAULT 'PENDING'</td>
+</tr>
+<tr>
+<td>booking_date</td>
+<td>DATE</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>time_slot</td>
+<td>VARCHAR(50)</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>TEXT</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>cancellation_reason</td>
+<td>TEXT</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMP</td>
+<td>ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: <code>idx_bookings_user</code>, <code>idx_bookings_seller</code>, <code>idx_bookings_service</code>, <code>idx_bookings_status</code></p>
+<h4 id="reviews"><code>reviews</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>service_id</td>
+<td>BIGINT</td>
+<td>FK → services(id), NOT NULL</td>
+</tr>
+<tr>
+<td>booking_id</td>
+<td>BIGINT</td>
+<td>FK → bookings(id), UNIQUE, NOT NULL</td>
+</tr>
+<tr>
+<td>rating</td>
+<td>INT</td>
+<td>NOT NULL, CHECK(1-5)</td>
+</tr>
+<tr>
+<td>comment</td>
+<td>TEXT</td>
+<td>NULLABLE</td>
+</tr>
+<tr>
+<td>is_deleted</td>
+<td>BOOLEAN</td>
+<td>DEFAULT FALSE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>TIMESTAMP</td>
+<td>ON UPDATE CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: <code>idx_reviews_service</code>, <code>idx_reviews_user</code></p>
+<h4 id="messages"><code>messages</code> </h4>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>BIGINT</td>
+<td>PK, AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>booking_id</td>
+<td>BIGINT</td>
+<td>FK → bookings(id), NOT NULL</td>
+</tr>
+<tr>
+<td>sender_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>receiver_id</td>
+<td>BIGINT</td>
+<td>FK → users(id), NOT NULL</td>
+</tr>
+<tr>
+<td>content</td>
+<td>TEXT</td>
+<td>NOT NULL</td>
+</tr>
+<tr>
+<td>is_read</td>
+<td>BOOLEAN</td>
+<td>DEFAULT FALSE</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+<td>DEFAULT CURRENT_TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: <code>idx_messages_booking</code>, <code>idx_messages_sender</code>, <code>idx_messages_receiver</code></p>
+<hr>
+<h2 id="3-api-design">3. API Design </h2>
+<h3 id="auth-apis">Auth APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/register</code></td>
+<td>No</td>
+<td>Register a new user/seller</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/login</code></td>
+<td>No</td>
+<td>Login and get JWT</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/refresh</code></td>
+<td>JWT</td>
+<td>Refresh access token</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/auth/verify-email?token=</code></td>
+<td>No</td>
+<td>Verify email address</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/forgot-password</code></td>
+<td>No</td>
+<td>Send password reset email</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/reset-password</code></td>
+<td>No</td>
+<td>Reset password with token</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-apis">User APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/users/me</code></td>
+<td>JWT</td>
+<td>Get current user profile</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/users/me</code></td>
+<td>JWT</td>
+<td>Update current user profile</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/users/me/password</code></td>
+<td>JWT</td>
+<td>Change password</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/users/me/location</code></td>
+<td>JWT</td>
+<td>Update user location</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/users/me</code></td>
+<td>JWT</td>
+<td>Deactivate own account</td>
+</tr>
+</tbody>
+</table>
+<h3 id="service-apis">Service APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/services</code></td>
+<td>No</td>
+<td>List/search services (with filters)</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/services/{id}</code></td>
+<td>No</td>
+<td>Get service details</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/services</code></td>
+<td>JWT(SELLER)</td>
+<td>Create a new service</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/services/{id}</code></td>
+<td>JWT(SELLER)</td>
+<td>Update a service</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/services/{id}</code></td>
+<td>JWT(SELLER)</td>
+<td>Soft-delete a service</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/services/nearby</code></td>
+<td>No</td>
+<td>Get services near coordinates</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/services/seller/{sellerId}</code></td>
+<td>No</td>
+<td>Get services by seller</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/services/my</code></td>
+<td>JWT(SELLER)</td>
+<td>Get own services</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query Parameters for <code>/api/services</code> and <code>/api/services/nearby</code></strong>:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>?lat=18.5&amp;lng=73.8&amp;radius=1.0
+&amp;category=plumber
+&amp;search=keyword
+&amp;minPrice=100&amp;maxPrice=5000
+&amp;minRating=3.0
+&amp;sortBy=distance|price|rating
+&amp;sortDir=asc|desc
+&amp;page=0&amp;size=12
+</code></pre><h3 id="booking-apis">Booking APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/bookings</code></td>
+<td>JWT(USER)</td>
+<td>Create a booking</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/bookings/my</code></td>
+<td>JWT(USER)</td>
+<td>Get user's bookings</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/bookings/seller</code></td>
+<td>JWT(SELLER)</td>
+<td>Get seller's bookings</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/bookings/{id}</code></td>
+<td>JWT</td>
+<td>Get booking details</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/bookings/{id}/status</code></td>
+<td>JWT</td>
+<td>Update booking status</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/bookings/{id}/cancel</code></td>
+<td>JWT</td>
+<td>Cancel a booking</td>
+</tr>
+</tbody>
+</table>
+<h3 id="review-apis">Review APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/reviews</code></td>
+<td>JWT(USER)</td>
+<td>Write a review (after completed booking)</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/reviews/service/{serviceId}</code></td>
+<td>No</td>
+<td>Get reviews for a service</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/reviews/{id}</code></td>
+<td>JWT(USER)</td>
+<td>Edit own review</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/reviews/{id}</code></td>
+<td>JWT(USER)</td>
+<td>Delete own review</td>
+</tr>
+</tbody>
+</table>
+<h3 id="message-apis">Message APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/messages</code></td>
+<td>JWT</td>
+<td>Send a message (within a booking)</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/messages/booking/{bookingId}</code></td>
+<td>JWT</td>
+<td>Get messages for a booking</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/messages/{id}/read</code></td>
+<td>JWT</td>
+<td>Mark message as read</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/messages/unread-count</code></td>
+<td>JWT</td>
+<td>Get unread message count</td>
+</tr>
+</tbody>
+</table>
+<h3 id="category-apis">Category APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/categories</code></td>
+<td>No</td>
+<td>List all active categories</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/categories</code></td>
+<td>JWT(ADMIN)</td>
+<td>Create category</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/categories/{id}</code></td>
+<td>JWT(ADMIN)</td>
+<td>Update category</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/categories/{id}</code></td>
+<td>JWT(ADMIN)</td>
+<td>Deactivate category</td>
+</tr>
+</tbody>
+</table>
+<h3 id="upload-apis">Upload APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/api/upload/image</code></td>
+<td>JWT</td>
+<td>Upload single image to Cloudinary</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/upload/images</code></td>
+<td>JWT</td>
+<td>Upload multiple images (max 5)</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/upload/image</code></td>
+<td>JWT</td>
+<td>Delete an image from Cloudinary</td>
+</tr>
+</tbody>
+</table>
+<h3 id="admin-apis">Admin APIs </h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/admin/users</code></td>
+<td>JWT(ADMIN)</td>
+<td>List all users (paginated)</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/admin/users/{id}/status</code></td>
+<td>JWT(ADMIN)</td>
+<td>Activate/deactivate user</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/admin/users/{id}</code></td>
+<td>JWT(ADMIN)</td>
+<td>Remove user</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/admin/services</code></td>
+<td>JWT(ADMIN)</td>
+<td>List all services</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/admin/services/{id}/status</code></td>
+<td>JWT(ADMIN)</td>
+<td>Approve/reject service</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/admin/services/{id}</code></td>
+<td>JWT(ADMIN)</td>
+<td>Remove service</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/admin/bookings</code></td>
+<td>JWT(ADMIN)</td>
+<td>List all bookings</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/admin/stats</code></td>
+<td>JWT(ADMIN)</td>
+<td>Get basic stats counts</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-authentication--security">4. Authentication &amp; Security </h2>
+<h3 id="authentication-flow">Authentication Flow </h3>
+<div class="mermaid">sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant DB as Database
+
+    U-&gt;&gt;F: Fill registration form
+    F-&gt;&gt;B: POST /api/auth/register
+    B-&gt;&gt;DB: Save user (is_verified=false)
+    B-&gt;&gt;U: Send verification email
+    U-&gt;&gt;B: GET /api/auth/verify-email?token=xxx
+    B-&gt;&gt;DB: Set is_verified=true
+    
+    U-&gt;&gt;F: Login (email + password)
+    F-&gt;&gt;B: POST /api/auth/login
+    B-&gt;&gt;DB: Validate credentials
+    B-&gt;&gt;F: Return { accessToken, refreshToken, user }
+    F-&gt;&gt;F: Store tokens in localStorage
+    
+    F-&gt;&gt;B: API request + Authorization: Bearer &lt;token&gt;
+    B-&gt;&gt;B: JwtAuthenticationFilter validates token
+    B-&gt;&gt;F: Return data
+    
+    Note over F,B: Token Expired
+    F-&gt;&gt;B: POST /api/auth/refresh { refreshToken }
+    B-&gt;&gt;F: Return new { accessToken, refreshToken }
+</div><h3 id="security-configuration">Security Configuration </h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Password Hashing</td>
+<td>BCrypt (Spring Security)</td>
+</tr>
+<tr>
+<td>JWT Access Token</td>
+<td>15 minutes expiry</td>
+</tr>
+<tr>
+<td>JWT Refresh Token</td>
+<td>7 days expiry</td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>Disabled (stateless JWT)</td>
+</tr>
+<tr>
+<td>CORS</td>
+<td>Configured for frontend origin (<code>http://localhost:5173</code>)</td>
+</tr>
+<tr>
+<td>XSS</td>
+<td>Input sanitization + Content-Security-Policy headers</td>
+</tr>
+<tr>
+<td>SQL Injection</td>
+<td>JPA parameterized queries (Hibernate)</td>
+</tr>
+<tr>
+<td>Rate Limiting</td>
+<td>Custom filter: 100 requests/minute per IP for auth endpoints</td>
+</tr>
+<tr>
+<td>Role-Based Access</td>
+<td><code>@PreAuthorize</code> annotations on controller methods</td>
+</tr>
+<tr>
+<td>Remember Me</td>
+<td>Longer-lived refresh token (30 days) when checked</td>
+</tr>
+</tbody>
+</table>
+<h3 id="role-permissions-matrix">Role Permissions Matrix </h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>USER</th>
+<th>SELLER</th>
+<th>ADMIN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>View services</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Book a service</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Write a review</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Create service</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Edit own service</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Manage bookings (seller)</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Admin panel</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Manage users</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Remove services</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-backend-implementation">5. Backend Implementation </h2>
+<h3 id="maven-dependencies-pomxml">Maven Dependencies (pom.xml) </h3>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token comment">&lt;!-- Core --&gt;</span>
+spring-boot-starter-web
+spring-boot-starter-security
+spring-boot-starter-data-jpa
+spring-boot-starter-validation
+spring-boot-starter-mail
+
+<span class="token comment">&lt;!-- Database --&gt;</span>
+mysql-connector-j
+
+<span class="token comment">&lt;!-- JWT --&gt;</span>
+io.jsonwebtoken:jjwt-api:0.12.6
+io.jsonwebtoken:jjwt-impl:0.12.6
+io.jsonwebtoken:jjwt-jackson:0.12.6
+
+<span class="token comment">&lt;!-- Cloudinary --&gt;</span>
+com.cloudinary:cloudinary-http45:1.38.0
+
+<span class="token comment">&lt;!-- Utilities --&gt;</span>
+lombok
+spring-boot-starter-test
+</code></pre><h3 id="key-implementation-patterns">Key Implementation Patterns </h3>
+<ol>
+<li><strong>Constructor Injection</strong>: All services use <code>@RequiredArgsConstructor</code> (Lombok)</li>
+<li><strong>DTO Pattern</strong>: Request/Response DTOs separate API layer from entities</li>
+<li><strong>Mapper Classes</strong>: Manual mapping (no MapStruct for simplicity)</li>
+<li><strong>Bean Validation</strong>: <code>@Valid</code> on request bodies, Jakarta validation annotations on DTOs</li>
+<li><strong>Global Exception Handler</strong>: <code>@RestControllerAdvice</code> returning standardized <code>ApiResponse</code></li>
+<li><strong>Soft Delete</strong>: Services and reviews use <code>is_deleted</code> flag</li>
+<li><strong>Audit Fields</strong>: <code>created_at</code> and <code>updated_at</code> on all entities via <code>@PrePersist</code>/<code>@PreUpdate</code></li>
+</ol>
+<h3 id="geo-search-strategy">Geo-Search Strategy </h3>
+<p>For nearby service search, I'll use the <strong>Haversine formula</strong> in a native SQL query:</p>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-SELECT">SELECT</span> <span class="token operator">*</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>
+  <span class="token number">6371</span> <span class="token operator">*</span> acos<span class="token punctuation">(</span>
+    cos<span class="token punctuation">(</span>radians<span class="token punctuation">(</span>:lat<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> cos<span class="token punctuation">(</span>radians<span class="token punctuation">(</span>latitude<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span>
+    cos<span class="token punctuation">(</span>radians<span class="token punctuation">(</span>longitude<span class="token punctuation">)</span> <span class="token operator">-</span> radians<span class="token punctuation">(</span>:lng<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+    sin<span class="token punctuation">(</span>radians<span class="token punctuation">(</span>:lat<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> sin<span class="token punctuation">(</span>radians<span class="token punctuation">(</span>latitude<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword keyword-AS">AS</span> distance
+<span class="token keyword keyword-FROM">FROM</span> services
+<span class="token keyword keyword-WHERE">WHERE</span> <span class="token keyword keyword-status">status</span> <span class="token operator">=</span> <span class="token string">'ACTIVE'</span> <span class="token operator">AND</span> is_deleted <span class="token operator">=</span> <span class="token boolean">false</span>
+<span class="token keyword keyword-HAVING">HAVING</span> distance <span class="token operator">&lt;</span> :radius
+<span class="token keyword keyword-ORDER">ORDER</span> <span class="token keyword keyword-BY">BY</span> distance
+</code></pre><p>This is efficient for the expected scale (&lt; 100K services). For larger scale, MySQL spatial indexes (<code>SPATIAL INDEX</code> on <code>POINT</code> geometry) would be the upgrade path.</p>
+<hr>
+<h2 id="6-frontend-implementation">6. Frontend Implementation </h2>
+<h3 id="tech-setup">Tech Setup </h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React</td>
+<td>18+</td>
+<td>UI framework</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>5+</td>
+<td>Build tool</td>
+</tr>
+<tr>
+<td>Tailwind CSS</td>
+<td>3</td>
+<td>Utility-first CSS</td>
+</tr>
+<tr>
+<td>React Router</td>
+<td>6</td>
+<td>Client-side routing</td>
+</tr>
+<tr>
+<td>Axios</td>
+<td>1.x</td>
+<td>HTTP client</td>
+</tr>
+<tr>
+<td>@react-google-maps/api</td>
+<td>Latest</td>
+<td>Google Maps integration</td>
+</tr>
+<tr>
+<td>react-hot-toast</td>
+<td>Latest</td>
+<td>Toast notifications</td>
+</tr>
+<tr>
+<td>lucide-react</td>
+<td>Latest</td>
+<td>Flat icons</td>
+</tr>
+<tr>
+<td>react-dropzone</td>
+<td>Latest</td>
+<td>File upload UI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="axios-configuration">Axios Configuration </h3>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript javascript"><code><span class="token comment">// JWT interceptor: auto-attach Authorization header</span>
+<span class="token comment">// Response interceptor: on 401, attempt refresh token</span>
+<span class="token comment">// On refresh failure: redirect to /login</span>
+</code></pre><h3 id="state-management">State Management </h3>
+<ul>
+<li><strong>AuthContext</strong>: User info, JWT tokens, login/logout/register functions</li>
+<li><strong>ThemeContext</strong>: Dark mode toggle, persisted in localStorage</li>
+<li><strong>LocationContext</strong>: User geolocation (lat/lng), address</li>
+</ul>
+<h3 id="protected-routes">Protected Routes </h3>
+<pre data-role="codeBlock" data-info="jsx" class="language-jsx jsx"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Route</span></span> <span class="token attr-name">element</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProtectedRoute</span></span> <span class="token attr-name">roles</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token string">'USER'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span><span class="token plain-text">
+  </span><span class="token punctuation">{</span><span class="token comment">/* User-only routes */</span><span class="token punctuation">}</span><span class="token plain-text">
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Route</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Route</span></span> <span class="token attr-name">element</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProtectedRoute</span></span> <span class="token attr-name">roles</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token string">'SELLER'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span><span class="token plain-text">
+  </span><span class="token punctuation">{</span><span class="token comment">/* Seller-only routes */</span><span class="token punctuation">}</span><span class="token plain-text">
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Route</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Route</span></span> <span class="token attr-name">element</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ProtectedRoute</span></span> <span class="token attr-name">roles</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token string">'ADMIN'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span><span class="token plain-text">
+  </span><span class="token punctuation">{</span><span class="token comment">/* Admin-only routes */</span><span class="token punctuation">}</span><span class="token plain-text">
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Route</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre><hr>
+<h2 id="7-screens--navigation">7. Screens &amp; Navigation </h2>
+<h3 id="navigation-flow">Navigation Flow </h3>
+<div class="mermaid">graph TD
+    A[Landing Page] --&gt; B{Logged In?}
+    B --&gt;|No| C[Login]
+    B --&gt;|No| D[Register]
+    B --&gt;|Yes, USER| E[User Dashboard]
+    B --&gt;|Yes, SELLER| F[Seller Dashboard]
+    B --&gt;|Yes, ADMIN| G[Admin Dashboard]
+    
+    C --&gt; E
+    C --&gt; F
+    C --&gt; G
+    D --&gt; C
+    
+    E --&gt; H[Service Details]
+    H --&gt; I[Book Service]
+    I --&gt; J[My Bookings]
+    J --&gt; K[Messages]
+    E --&gt; L[Profile]
+    E --&gt; M[Settings]
+    
+    F --&gt; N[My Services]
+    F --&gt; O[Add Service]
+    F --&gt; P[Seller Bookings]
+    P --&gt; K
+    N --&gt; Q[Edit Service]
+    
+    G --&gt; R[Manage Users]
+    G --&gt; S[Manage Services]
+    G --&gt; T[Manage Categories]
+</div><h3 id="screen-details">Screen Details </h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Page</th>
+<th>URL</th>
+<th>Key Components</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Landing</td>
+<td><code>/</code></td>
+<td>Hero, category carousel, featured services, CTA</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Login</td>
+<td><code>/login</code></td>
+<td>Email + password form, forgot password link</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Register</td>
+<td><code>/register</code></td>
+<td>Registration form with role selector (User/Seller)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Forgot Password</td>
+<td><code>/forgot-password</code></td>
+<td>Email input to request reset</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Reset Password</td>
+<td><code>/reset-password?token=</code></td>
+<td>New password form</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Verify Email</td>
+<td><code>/verify-email?token=</code></td>
+<td>Auto-verification with status</td>
+</tr>
+<tr>
+<td>7</td>
+<td>User Dashboard</td>
+<td><code>/dashboard</code></td>
+<td>Map with nearby services, service grid, filters, search</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Service Details</td>
+<td><code>/services/:id</code></td>
+<td>Images, description, price, reviews, book button, seller info</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Booking Page</td>
+<td><code>/book/:serviceId</code></td>
+<td>Date picker, time, notes, confirm button</td>
+</tr>
+<tr>
+<td>10</td>
+<td>My Bookings</td>
+<td><code>/my-bookings</code></td>
+<td>Booking list with status tabs, cancel option</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Messages</td>
+<td><code>/bookings/:bookingId/messages</code></td>
+<td>Chat-like message thread</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Profile</td>
+<td><code>/profile</code></td>
+<td>View/edit profile, upload avatar</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Settings</td>
+<td><code>/settings</code></td>
+<td>Change password, location, preferences, dark mode</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Seller Dashboard</td>
+<td><code>/seller/dashboard</code></td>
+<td>Stats, recent bookings, service overview</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Add Service</td>
+<td><code>/seller/services/new</code></td>
+<td>Service creation form with image upload</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Edit Service</td>
+<td><code>/seller/services/:id/edit</code></td>
+<td>Pre-filled service edit form</td>
+</tr>
+<tr>
+<td>17</td>
+<td>My Services</td>
+<td><code>/seller/services</code></td>
+<td>List of seller's services with status</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Seller Bookings</td>
+<td><code>/seller/bookings</code></td>
+<td>Incoming bookings with accept/reject</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Seller Profile</td>
+<td><code>/seller/profile</code></td>
+<td>Business profile management</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Admin Dashboard</td>
+<td><code>/admin</code></td>
+<td>Stats cards, quick actions</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Manage Users</td>
+<td><code>/admin/users</code></td>
+<td>User table with search, filter, activate/deactivate</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Manage Services</td>
+<td><code>/admin/services</code></td>
+<td>Service table with approve/reject/delete</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Manage Categories</td>
+<td><code>/admin/categories</code></td>
+<td>Category CRUD</td>
+</tr>
+<tr>
+<td>24</td>
+<td>404 Not Found</td>
+<td><code>*</code></td>
+<td>Friendly error page with back button</td>
+</tr>
+</tbody>
+</table>
+<h3 id="screen-states">Screen States </h3>
+<p>Each screen implements:</p>
+<ul>
+<li><strong>Loading</strong>: Skeleton loaders / shimmer effect</li>
+<li><strong>Empty</strong>: Friendly illustration + message (e.g., "No services found nearby")</li>
+<li><strong>Error</strong>: Error message with retry button</li>
+<li><strong>Success</strong>: Data display with animations</li>
+</ul>
+<hr>
+<h2 id="8-search--discovery">8. Search &amp; Discovery </h2>
+<h3 id="search-features">Search Features </h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Location-based</strong></td>
+<td>GPS coordinates from browser Geolocation API</td>
+</tr>
+<tr>
+<td><strong>Radius filter</strong></td>
+<td>User-configurable: 0.5km, 1km, 2km, 5km, 10km (default: 1km)</td>
+</tr>
+<tr>
+<td><strong>Text search</strong></td>
+<td>Search by service name, description (LIKE query)</td>
+</tr>
+<tr>
+<td><strong>Category filter</strong></td>
+<td>Dropdown/chips: plumber, electrician, tailor, etc.</td>
+</tr>
+<tr>
+<td><strong>Price range</strong></td>
+<td>Min/max price slider</td>
+</tr>
+<tr>
+<td><strong>Rating filter</strong></td>
+<td>Minimum rating (1-5 stars)</td>
+</tr>
+<tr>
+<td><strong>Sorting</strong></td>
+<td>Distance (default), Price (low→high, high→low), Rating</td>
+</tr>
+<tr>
+<td><strong>Pagination</strong></td>
+<td>12 items per page, infinite scroll or page numbers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="map-integration">Map Integration </h3>
+<ul>
+<li><strong>Google Maps JavaScript API</strong> with <code>@react-google-maps/api</code></li>
+<li>User location shown as a blue dot with pulsing animation</li>
+<li>Nearby services shown as pin markers with service icon</li>
+<li>Clicking a marker opens an info window with service name, rating, distance</li>
+<li>Radius circle drawn on map (adjustable)</li>
+<li>Map and list view synchronized</li>
+</ul>
+<hr>
+<h2 id="9-business-rules">9. Business Rules </h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users can edit reviews</td>
+<td>✅ Within 7 days of posting</td>
+</tr>
+<tr>
+<td>Users can delete reviews</td>
+<td>✅ Soft delete</td>
+</tr>
+<tr>
+<td>Users can cancel bookings</td>
+<td>✅ Only if status is PENDING or CONFIRMED</td>
+</tr>
+<tr>
+<td>Sellers can reject bookings</td>
+<td>✅ Only if status is PENDING</td>
+</tr>
+<tr>
+<td>Sellers can mark as completed</td>
+<td>✅ Only if status is IN_PROGRESS</td>
+</tr>
+<tr>
+<td>Multiple bookings simultaneously</td>
+<td>✅ Different time slots allowed</td>
+</tr>
+<tr>
+<td>Max image upload size</td>
+<td>5 MB per image</td>
+</tr>
+<tr>
+<td>Max images per service</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Service description min length</td>
+<td>50 characters</td>
+</tr>
+<tr>
+<td>Service price</td>
+<td>Must be &gt; ₹0</td>
+</tr>
+<tr>
+<td>Review requirement</td>
+<td>Must have a completed booking</td>
+</tr>
+<tr>
+<td>One review per booking</td>
+<td>✅ Enforced by UNIQUE constraint</td>
+</tr>
+<tr>
+<td>Booking cancellation</td>
+<td>Free cancellation before confirmation</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="10-validation-rules">10. Validation Rules </h2>
+<h3 id="password">Password </h3>
+<ul>
+<li>Minimum 8 characters</li>
+<li>At least 1 uppercase letter</li>
+<li>At least 1 lowercase letter</li>
+<li>At least 1 digit</li>
+<li>At least 1 special character (<code>@#$%^&amp;+=!</code>)</li>
+</ul>
+<h3 id="email">Email </h3>
+<ul>
+<li>RFC 5322 format validation</li>
+<li>Must be unique in database</li>
+</ul>
+<h3 id="phone">Phone </h3>
+<ul>
+<li>Exactly 10 digits</li>
+<li>Only numeric characters</li>
+<li>Must be unique in database</li>
+</ul>
+<h3 id="full-name">Full Name </h3>
+<ul>
+<li>3–100 characters</li>
+<li>Alphabets and spaces only</li>
+</ul>
+<h3 id="service-title">Service Title </h3>
+<ul>
+<li>5–200 characters</li>
+</ul>
+<h3 id="service-description">Service Description </h3>
+<ul>
+<li>Minimum 50 characters</li>
+</ul>
+<h3 id="service-price">Service Price </h3>
+<ul>
+<li>Greater than 0</li>
+<li>Maximum 2 decimal places</li>
+</ul>
+<h3 id="rating">Rating </h3>
+<ul>
+<li>Integer 1–5</li>
+</ul>
+<h3 id="review-comment">Review Comment </h3>
+<ul>
+<li>Maximum 1000 characters</li>
+</ul>
+<hr>
+<h2 id="11-error-handling">11. Error Handling </h2>
+<h3 id="api-error-response-format">API Error Response Format </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"success"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token property">"message"</span><span class="token operator">:</span> <span class="token string">"Validation failed"</span><span class="token punctuation">,</span>
+  <span class="token property">"errors"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"Email is already registered"</span><span class="token punctuation">,</span>
+    <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"Password must be at least 8 characters"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"timestamp"</span><span class="token operator">:</span> <span class="token string">"2026-06-29T21:00:00Z"</span><span class="token punctuation">,</span>
+  <span class="token property">"status"</span><span class="token operator">:</span> <span class="token number">400</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="http-status-codes">HTTP Status Codes </h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Bad Request / Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized / Invalid token</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden / Insufficient role</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Resource not found</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Conflict (duplicate email/phone)</td>
+</tr>
+<tr>
+<td>413</td>
+<td>File too large</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Rate limit exceeded</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal server error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="frontend-error-display">Frontend Error Display </h3>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Display</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Validation</td>
+<td>Inline field errors (red text below field)</td>
+</tr>
+<tr>
+<td>API errors</td>
+<td>Toast notification (top-right)</td>
+</tr>
+<tr>
+<td>Network errors</td>
+<td>Full-screen retry overlay</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Custom 404 page</td>
+</tr>
+<tr>
+<td>500</td>
+<td>"Something went wrong" page with retry</td>
+</tr>
+<tr>
+<td>Auth errors</td>
+<td>Redirect to login with message</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-file-uploads">12. File Uploads </h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provider</td>
+<td>Cloudinary</td>
+</tr>
+<tr>
+<td>Image formats</td>
+<td>JPG, PNG, WebP</td>
+</tr>
+<tr>
+<td>Max size</td>
+<td>5 MB per image</td>
+</tr>
+<tr>
+<td>Max count</td>
+<td>5 per service, 1 for profile</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>Cloudinary auto-quality transformation</td>
+</tr>
+<tr>
+<td>Upload flow</td>
+<td>Frontend → Backend → Cloudinary → Return URL</td>
+</tr>
+<tr>
+<td>Deletion</td>
+<td>Backend deletes from Cloudinary by public_id</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="13-admin-panel">13. Admin Panel </h2>
+<h3 id="admin-capabilities">Admin Capabilities </h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manage Users</td>
+<td>List, search, filter by role, activate/deactivate, delete</td>
+</tr>
+<tr>
+<td>Manage Services</td>
+<td>List, search, approve/reject pending, remove</td>
+</tr>
+<tr>
+<td>Manage Categories</td>
+<td>CRUD operations</td>
+</tr>
+<tr>
+<td>View Basic Stats</td>
+<td>Total users, services, bookings (count cards)</td>
+</tr>
+<tr>
+<td>Suspend Accounts</td>
+<td>Set <code>is_active = false</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout" data-callout="note">
+<div class="callout-title">Note</div>
+<p>Full analytics dashboard is out of scope per PRD. Basic stat counts (total users, sellers, services, bookings) will be provided.</p>
+</div>
+<hr>
+<h2 id="14-third-party-integrations">14. Third-Party Integrations </h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Purpose</th>
+<th>Integration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Maps JS API</td>
+<td>Map display, geocoding, nearby search</td>
+<td><code>@react-google-maps/api</code> in React</td>
+</tr>
+<tr>
+<td>Cloudinary</td>
+<td>Image upload, compression, CDN</td>
+<td>Backend SDK (<code>cloudinary-http45</code>)</td>
+</tr>
+<tr>
+<td>JavaMail (SMTP)</td>
+<td>Email verification, password reset</td>
+<td><code>spring-boot-starter-mail</code></td>
+</tr>
+<tr>
+<td>Razorpay</td>
+<td>Payment (scaffolded only)</td>
+<td>Placeholder in backend</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="15-performance--caching">15. Performance &amp; Caching </h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expected users</td>
+<td>~1,000 initially</td>
+</tr>
+<tr>
+<td>Max response time</td>
+<td>&lt; 500ms for API calls</td>
+</tr>
+<tr>
+<td>Pagination</td>
+<td>12 items per page (backend Spring <code>Pageable</code>)</td>
+</tr>
+<tr>
+<td>Lazy loading</td>
+<td>Images lazy-loaded with <code>loading="lazy"</code></td>
+</tr>
+<tr>
+<td>Frontend code splitting</td>
+<td>React.lazy + Suspense for route-level splitting</td>
+</tr>
+<tr>
+<td>Image optimization</td>
+<td>Cloudinary auto-format + WebP</td>
+</tr>
+<tr>
+<td>Database indexes</td>
+<td>On all FK columns and search columns</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="16-uiux-design-system">16. UI/UX Design System </h2>
+<h3 id="theme">Theme </h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Style</td>
+<td>Glassmorphism with blue tint</td>
+</tr>
+<tr>
+<td>Primary</td>
+<td><code>#3B82F6</code> (Blue-500)</td>
+</tr>
+<tr>
+<td>Primary Dark</td>
+<td><code>#1E40AF</code> (Blue-800)</td>
+</tr>
+<tr>
+<td>Primary Light</td>
+<td><code>#DBEAFE</code> (Blue-100)</td>
+</tr>
+<tr>
+<td>Background Light</td>
+<td><code>#F0F9FF</code> (Sky-50)</td>
+</tr>
+<tr>
+<td>Background Dark</td>
+<td><code>#0F172A</code> (Slate-900)</td>
+</tr>
+<tr>
+<td>Glass Effect</td>
+<td><code>backdrop-blur-xl bg-white/20 border border-white/30</code></td>
+</tr>
+<tr>
+<td>Dark Mode Glass</td>
+<td><code>backdrop-blur-xl bg-slate-800/40 border border-slate-700/50</code></td>
+</tr>
+<tr>
+<td>Typography</td>
+<td>Inter (Google Fonts) — clean, modern sans-serif</td>
+</tr>
+<tr>
+<td>Icons</td>
+<td>Lucide React (flat style)</td>
+</tr>
+<tr>
+<td>Border Radius</td>
+<td>16px (large), 12px (medium), 8px (small)</td>
+</tr>
+<tr>
+<td>Shadows</td>
+<td>Soft blue-tinted shadows</td>
+</tr>
+<tr>
+<td>Animations</td>
+<td>Subtle: 200-300ms transitions, fade-in, slide-up</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dark-mode">Dark Mode </h3>
+<ul>
+<li>Toggle in navbar</li>
+<li>Persisted in localStorage</li>
+<li>Tailwind <code>darkMode: 'class'</code> strategy</li>
+</ul>
+<h3 id="responsive-breakpoints">Responsive Breakpoints </h3>
+<ul>
+<li>Mobile: &lt; 640px</li>
+<li>Tablet: 640px – 1024px</li>
+<li>Desktop: &gt; 1024px</li>
+</ul>
+<hr>
+<h2 id="17-logging">17. Logging </h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication events</td>
+<td>SLF4J INFO: login success/failure, registration</td>
+</tr>
+<tr>
+<td>API errors</td>
+<td>SLF4J ERROR: exception details, stack traces</td>
+</tr>
+<tr>
+<td>CRUD operations</td>
+<td>SLF4J INFO: service created/updated/deleted</td>
+</tr>
+<tr>
+<td>Admin actions</td>
+<td>SLF4J WARN: user suspended, service removed</td>
+</tr>
+<tr>
+<td>Request tracing</td>
+<td>Request ID in headers for correlation</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="18-deployment">18. Deployment </h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td><code>npm run dev</code> → localhost:5173</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td><code>mvn spring-boot:run</code> → localhost:8080</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>MySQL local → localhost:3306</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="19-execution-phases">19. Execution Phases </h2>
+<h3 id="phase-1-foundation-database--project-setup">Phase 1: Foundation (Database + Project Setup) </h3>
+<ol>
+<li>Create project folder structure</li>
+<li>Create <code>schema.sql</code> with all tables</li>
+<li>Create <code>seed.sql</code> with categories and admin user</li>
+<li>Initialize Spring Boot project with Maven (<code>pom.xml</code>)</li>
+<li>Configure <code>application.yml</code> (MySQL, JPA, JWT, Mail, Cloudinary)</li>
+<li>Create all entity classes</li>
+<li>Create all repository interfaces</li>
+<li>Create enum classes</li>
+<li>Initialize Vite + React project</li>
+<li>Configure Tailwind CSS with custom theme</li>
+<li>Set up project-level configs (ESLint, env files)</li>
+</ol>
+<h3 id="phase-2-authentication-backend">Phase 2: Authentication (Backend) </h3>
+<ol>
+<li>Create DTOs (RegisterRequest, LoginRequest, AuthResponse)</li>
+<li>Implement JwtTokenProvider</li>
+<li>Implement CustomUserDetailsService</li>
+<li>Configure SecurityConfig (Spring Security 6 filter chain)</li>
+<li>Implement JwtAuthenticationFilter</li>
+<li>Implement AuthService (register, login, verify, forgot/reset password)</li>
+<li>Implement EmailService (JavaMail)</li>
+<li>Implement AuthController</li>
+<li>Implement GlobalExceptionHandler</li>
+<li>Create CorsConfig</li>
+</ol>
+<h3 id="phase-3-core-backend-services">Phase 3: Core Backend Services </h3>
+<ol>
+<li>Implement CategoryService + Controller</li>
+<li>Implement ServiceService + Controller (CRUD + geo-search)</li>
+<li>Implement BookingService + Controller</li>
+<li>Implement ReviewService + Controller</li>
+<li>Implement MessageService + Controller</li>
+<li>Implement CloudinaryService + UploadController</li>
+<li>Implement AdminService + AdminController</li>
+<li>Implement UserService + UserController</li>
+<li>Create all mapper classes</li>
+</ol>
+<h3 id="phase-4-frontend-foundation">Phase 4: Frontend Foundation </h3>
+<ol>
+<li>Set up React Router with all routes</li>
+<li>Build design system components (Button, Input, Card, Modal, Toast, etc.)</li>
+<li>Implement AuthContext + login/register/logout</li>
+<li>Build Navbar + Sidebar + Footer (layout)</li>
+<li>Implement Axios service layer with interceptors</li>
+<li>Implement ThemeContext (dark mode)</li>
+<li>Implement LocationContext (geolocation)</li>
+<li>Build ProtectedRoute component</li>
+</ol>
+<h3 id="phase-5-frontend-pages--auth--user">Phase 5: Frontend Pages — Auth &amp; User </h3>
+<ol>
+<li>Landing page (hero, categories, CTA)</li>
+<li>Login page</li>
+<li>Register page (with role selection)</li>
+<li>Forgot Password page</li>
+<li>Reset Password page</li>
+<li>Verify Email page</li>
+<li>User Dashboard (map + service grid + filters)</li>
+<li>Service Details page</li>
+<li>Booking page</li>
+<li>My Bookings page</li>
+<li>Messages page</li>
+<li>Profile page</li>
+<li>Settings page</li>
+</ol>
+<h3 id="phase-6-frontend-pages--seller--admin">Phase 6: Frontend Pages — Seller &amp; Admin </h3>
+<ol>
+<li>Seller Dashboard</li>
+<li>Add Service page (with image upload)</li>
+<li>Edit Service page</li>
+<li>My Services page</li>
+<li>Seller Bookings page</li>
+<li>Admin Dashboard</li>
+<li>Manage Users page</li>
+<li>Manage Services page</li>
+<li>Manage Categories page</li>
+<li>404 page</li>
+</ol>
+<h3 id="phase-7-polish--verification">Phase 7: Polish &amp; Verification </h3>
+<ol>
+<li>Test all API endpoints (Postman collection)</li>
+<li>Test all frontend flows end-to-end</li>
+<li>Responsive design verification</li>
+<li>Dark mode verification</li>
+<li>Error handling verification</li>
+<li>Create documentation files (<a href="http://PRD.md">PRD.md</a>, <a href="http://API.md">API.md</a>, <a href="http://DATABASE.md">DATABASE.md</a>)</li>
+<li>Create Postman collection</li>
+</ol>
+<hr>
+<h2 id="20-acceptance-criteria">20. Acceptance Criteria </h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Accepted When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>User Registration</strong></td>
+<td>✅ Valid registration works ✅ Duplicate email/phone rejected ✅ Verification email sent ✅ Unverified users blocked</td>
+</tr>
+<tr>
+<td><strong>User Login</strong></td>
+<td>✅ Valid credentials return JWT ✅ Invalid credentials return 401 ✅ Token refresh works ✅ Redirects to correct dashboard</td>
+</tr>
+<tr>
+<td><strong>Service Creation</strong></td>
+<td>✅ Seller can create with images ✅ Validation errors shown ✅ Service appears in search</td>
+</tr>
+<tr>
+<td><strong>Nearby Search</strong></td>
+<td>✅ Map shows user location ✅ Services within radius displayed ✅ Distance calculated correctly ✅ Filters work</td>
+</tr>
+<tr>
+<td><strong>Booking</strong></td>
+<td>✅ User can book a service ✅ Seller receives booking ✅ Status updates work ✅ Cancellation works</td>
+</tr>
+<tr>
+<td><strong>Reviews</strong></td>
+<td>✅ Only after completed booking ✅ One review per booking ✅ Rating updates service average</td>
+</tr>
+<tr>
+<td><strong>Messages</strong></td>
+<td>✅ Messages sent within booking ✅ Read status tracked ✅ Unread count displayed</td>
+</tr>
+<tr>
+<td><strong>Admin Panel</strong></td>
+<td>✅ Admin can manage users ✅ Admin can manage services ✅ Admin can manage categories</td>
+</tr>
+<tr>
+<td><strong>Dark Mode</strong></td>
+<td>✅ Toggle works ✅ Persists across sessions ✅ All pages styled correctly</td>
+</tr>
+<tr>
+<td><strong>Responsive</strong></td>
+<td>✅ Works on mobile, tablet, desktop ✅ Map responsive ✅ Navigation adapts</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="proposed-changes-summary">Proposed Changes Summary </h2>
+<h3 id="new-database--schema-and-seed-data">[NEW] <code>database/</code> — Schema and seed data </h3>
+<ul>
+<li><code>schema.sql</code>: All 7 tables with indexes and constraints</li>
+<li><code>seed.sql</code>: Categories, admin user</li>
+</ul>
+<h3 id="new-backend--spring-boot-3-application">[NEW] <code>backend/</code> — Spring Boot 3 application </h3>
+<ul>
+<li>9 Controllers, 10 Services, 7 Repositories</li>
+<li>15 Entities/Enums, 17 DTOs</li>
+<li>Security layer (JWT + Spring Security 6)</li>
+<li>Global exception handling</li>
+<li>Cloudinary + Email integrations</li>
+</ul>
+<h3 id="new-frontend--react--vite--tailwind">[NEW] <code>frontend/</code> — React + Vite + Tailwind </h3>
+<ul>
+<li>24 pages across User, Seller, and Admin roles</li>
+<li>Reusable component library (glassmorphism design)</li>
+<li>Google Maps integration</li>
+<li>Dark mode support</li>
+<li>Axios with JWT interceptors</li>
+</ul>
+<h3 id="new-docs--documentation">[NEW] <code>docs/</code> — Documentation </h3>
+<ul>
+<li>API reference, database schema, user stories</li>
+</ul>
+<h3 id="new-postman--api-testing-collection">[NEW] <code>postman/</code> — API testing collection </h3>
+<hr>
+<h2 id="verification-plan">Verification Plan </h2>
+<h3 id="automated-tests">Automated Tests </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Backend</span>
+<span class="token builtin class-name">cd</span> backend <span class="token operator">&amp;&amp;</span> mvn <span class="token builtin class-name">test</span>
+
+<span class="token comment"># Frontend</span>
+<span class="token builtin class-name">cd</span> frontend <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> run build  <span class="token comment"># Verify no build errors</span>
+</code></pre><h3 id="manual-verification">Manual Verification </h3>
+<ol>
+<li>Start MySQL, backend, and frontend</li>
+<li>Register a user → verify email → login</li>
+<li>Register a seller → create a service with images</li>
+<li>As user: search nearby services, view details, book a service</li>
+<li>As seller: confirm booking, mark as completed</li>
+<li>As user: write a review</li>
+<li>As admin: manage users and services</li>
+<li>Test dark mode toggle</li>
+<li>Test responsive layouts (mobile/tablet/desktop)</li>
+<li>Test all error scenarios (invalid inputs, expired tokens, 404s)</li>
+</ol>
+
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('div.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>

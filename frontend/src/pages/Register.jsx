@@ -1,178 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, Mail, Phone, Lock, MapPin } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import GlassCard from '../components/ui/GlassCard';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
-import toast from 'react-hot-toast';
+import { showToast } from '../components/ui/Toast';
+import { validateEmail, validatePhone, validatePassword, validateFullName, validateConfirmPassword } from '../utils/validators';
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    city: '',
-    role: 'USER'
-  });
-  
+export default function Register() {
+  const [role, setRole] = useState('USER');
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  
+  const [agreed, setAgreed] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const roleParam = params.get('role');
-    if (roleParam && roleParam.toUpperCase() === 'SELLER') {
-      setFormData(prev => ({ ...prev, role: 'SELLER' }));
-    }
-  }, [location]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
+  const validate = () => {
+    const errs = {};
+    const name = validateFullName(form.fullName); if (!name.isValid) errs.fullName = name.message;
+    const email = validateEmail(form.email); if (!email.isValid) errs.email = email.message;
+    const phone = validatePhone(form.phone); if (!phone.isValid) errs.phone = phone.message;
+    const pwd = validatePassword(form.password); if (!pwd.isValid) errs.password = pwd.message;
+    const confirm = validateConfirmPassword(form.password, form.confirmPassword); if (!confirm.isValid) errs.confirmPassword = confirm.message;
+    if (!agreed) errs.agreed = 'You must agree to the terms';
+    return errs;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
     setLoading(true);
-    
-    const success = await register(formData);
-
-    if (success) {
-      toast.success('Account created! Redirecting...');
-      // Read role from JWT for redirect
-      const token = localStorage.getItem('token');
-      let role = 'USER';
-      if (token) {
-        try {
-          role = JSON.parse(atob(token.split('.')[1])).role;
-        } catch {}
-      }
-
+    try {
+      await register({ ...form, role });
+      showToast.success('Account created successfully!');
       if (role === 'SELLER') navigate('/seller/dashboard');
-      else if (role === 'ADMIN') navigate('/admin/dashboard');
       else navigate('/dashboard');
-    } else {
-      setError('Registration failed. The email may already be in use.');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Registration failed';
+      showToast.error(msg);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh] py-8">
-      <GlassCard className="w-full max-w-lg animate-slide-up">
-        <h2 className="text-2xl font-bold text-center mb-2 text-slate-800 dark:text-white">
-          Create an Account
-        </h2>
-        <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">
-          Join Localyze as a {formData.role === 'SELLER' ? 'Business Partner' : 'Customer'}
-        </p>
-        
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
-          {/* Role Selector */}
-          <div className="flex gap-4 mb-4">
-            <button
-              type="button"
-              className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors border-2 ${
-                formData.role === 'USER' 
-                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400 border-primary-500' 
-                  : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border-transparent'
-              }`}
-              onClick={() => setFormData({...formData, role: 'USER'})}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors border-2 ${
-                formData.role === 'SELLER' 
-                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-400 border-primary-500' 
-                  : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border-transparent'
-              }`}
-              onClick={() => setFormData({...formData, role: 'SELLER'})}
-            >
-              Business / Seller
-            </button>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md animate-slide-up">
+        <div className="glass-card bg-white/80 dark:bg-slate-800/80 p-8">
+          <div className="text-center mb-8">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <MapPin className="w-7 h-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Join Localyze today</p>
           </div>
 
-          <Input 
-            label="Full Name" 
-            name="name"
-            placeholder="John Doe"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          
-          <Input 
-            label="Email Address" 
-            name="email"
-            type="email" 
-            placeholder="you@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input 
-              label="Phone Number" 
-              name="phone"
-              placeholder="9876543210"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-            <Input 
-              label="City" 
-              name="city"
-              placeholder="Mumbai"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            />
+          {/* Role selector */}
+          <div className="flex gap-2 p-1 rounded-xl bg-gray-200/50 dark:bg-slate-700/50 mb-6">
+            {[{ val: 'USER', label: "I'm a Customer" }, { val: 'SELLER', label: "I'm a Provider" }].map((r) => (
+              <button key={r.val} type="button" onClick={() => setRole(r.val)}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  role === r.val ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                {r.label}
+              </button>
+            ))}
           </div>
-          
-          <Input 
-            label="Password (min 6 characters)" 
-            name="password"
-            type="password" 
-            placeholder="••••••••"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
 
-          <Button type="submit" isLoading={loading} className="w-full py-2.5 mt-4">
-            Create Account
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input label="Full Name" name="fullName" icon={User} placeholder="John Doe"
+              value={form.fullName} onChange={handleChange} error={errors.fullName} />
+            <Input label="Email" name="email" type="email" icon={Mail} placeholder="you@example.com"
+              value={form.email} onChange={handleChange} error={errors.email} />
+            <Input label="Phone" name="phone" icon={Phone} placeholder="9876543210"
+              value={form.phone} onChange={handleChange} error={errors.phone} />
+            <Input label="Password" name="password" type="password" icon={Lock} placeholder="Min 8 characters"
+              value={form.password} onChange={handleChange} error={errors.password} />
+            <Input label="Confirm Password" name="confirmPassword" type="password" icon={Lock} placeholder="Repeat password"
+              value={form.confirmPassword} onChange={handleChange} error={errors.confirmPassword} />
 
-        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary-600 font-medium hover:underline dark:text-primary-400">
-            Log in
-          </Link>
-        </p>
-      </GlassCard>
+            <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 rounded" />
+              <span>I agree to the <a href="#" className="text-blue-500">Terms of Service</a> and <a href="#" className="text-blue-500">Privacy Policy</a></span>
+            </label>
+            {errors.agreed && <p className="text-xs text-red-500">{errors.agreed}</p>}
+
+            <Button type="submit" loading={loading} className="w-full">Create Account</Button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-500 hover:text-blue-600 font-semibold">Sign in</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Register;
+}

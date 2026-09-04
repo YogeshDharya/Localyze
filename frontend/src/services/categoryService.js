@@ -1,5 +1,14 @@
 import api from './api';
 
-export const categoryService = {
-  getAll: () => api.get('/categories')
+const categoryService = {
+  getAll: () => api.get('/categories'),
+
+  create: (data) => api.post('/categories', data),
+  createCategory: (data) => api.post('/categories', data),
+
+  updateCategory: (id, data) => api.put(`/categories/${id}`, data),
+
+  deleteCategory: (id) => api.delete(`/categories/${id}`),
 };
+
+export default categoryService;

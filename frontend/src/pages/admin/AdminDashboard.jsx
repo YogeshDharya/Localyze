@@ -1,159 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { adminService } from '../../services/adminService';
-import { serviceService } from '../../services/serviceService';
-import { Users, Briefcase, Activity, ShoppingBag } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Package, Calendar, Folder, ArrowRight } from 'lucide-react';
+import adminService from '../../services/adminService';
+import Card from '../../components/ui/Card';
+import Spinner from '../../components/ui/Spinner';
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    sellers: 0,
-    totalServices: 0,
-    activeServices: 0
-  });
-  const [recentUsers, setRecentUsers] = useState([]);
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ totalUsers: 0, totalSellers: 0, totalServices: 0, activeServices: 0, totalBookings: 0, totalCategories: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const [usersRes, servicesRes] = await Promise.all([
-          adminService.getUsers(0, 10),
-          serviceService.getAll(0, 1000)
-        ]);
-
-        if (usersRes.success) {
-          const users = usersRes.data.content;
-          const totalSellers = usersRes.data.totalElements; // Approximate or we filter
-          const sellersCount = users.filter(u => u.role === 'SELLER').length;
-          setStats(prev => ({ ...prev, totalUsers: usersRes.data.totalElements, sellers: sellersCount }));
-          setRecentUsers(users.slice(0, 5));
-        }
-
-        if (servicesRes.success) {
-          const services = servicesRes.data.content;
-          const activeCount = services.filter(s => s.status === 'ACTIVE').length;
-          setStats(prev => ({ 
-            ...prev, 
-            totalServices: servicesRes.data.totalElements,
-            activeServices: activeCount
-          }));
-        }
-      } catch (err) {
-        toast.error('Failed to load dashboard data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboardData();
+    adminService.getStats()
+      .then(res => setStats(res.data))
+      .catch(() => { })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-8 text-center">Loading dashboard...</div>;
+  if (loading) return <div className="flex justify-center py-20"><Spinner size="xl" /></div>;
+
+  const statCards = [
+    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'from-red-500 to-cyan-500' },
+    { label: 'Total Sellers', value: stats.totalSellers, icon: Users, color: 'from-indigo-500 to-blue-500' },
+    { label: 'Total Services', value: stats.totalServices, icon: Package, color: 'from-purple-500 to-pink-500' },
+    { label: 'Active Services', value: stats.activeServices, icon: Package, color: 'from-emerald-500 to-teal-500' },
+    { label: 'Total Bookings', value: stats.totalBookings, icon: Calendar, color: 'from-amber-500 to-orange-500' },
+    { label: 'Categories', value: stats.totalCategories, icon: Folder, color: 'from-rose-500 to-red-500' },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Admin Dashboard</h1>
-        <div className="space-x-2">
-          <Link to="/admin/users" className="btn-primary text-sm px-4 py-2">Manage Users</Link>
-          <Link to="/admin/services" className="btn-primary text-sm px-4 py-2">Manage Services</Link>
-        </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Admin Dashboard</h1>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {statCards.map(s => (
+          <div key={s.label} className="glass-card flex items-center gap-4">
+            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
+              <s.icon className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{s.value}</p>
+              <p className="text-sm font-medium text-gray-500">{s.label}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 border">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500/20 rounded-lg text-blue-600 dark:text-blue-400">
-              <Users size={24} />
+      {/* Quick Links */}
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Links</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <Card onClick={() => navigate('/admin/users')} className="flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+              <Users className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Users</p>
-              <h3 className="text-2xl font-bold">{stats.totalUsers}</h3>
-            </div>
+            <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-500 transition-colors">Manage Users</span>
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 border">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/20 rounded-lg text-green-600 dark:text-green-400">
-              <Briefcase size={24} />
+          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+        </Card>
+        <Card onClick={() => navigate('/admin/services')} className="flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
+              <Package className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Sellers</p>
-              <h3 className="text-2xl font-bold">{stats.sellers}</h3>
-            </div>
+            <span className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-500 transition-colors">Manage Services</span>
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20 border">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-500/20 rounded-lg text-purple-600 dark:text-purple-400">
-              <ShoppingBag size={24} />
+          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+        </Card>
+        <Card onClick={() => navigate('/admin/categories')} className="flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+              <Folder className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Services</p>
-              <h3 className="text-2xl font-bold">{stats.totalServices}</h3>
-            </div>
+            <span className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-500 transition-colors">Manage Categories</span>
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-amber-500/10 to-amber-600/10 border-amber-500/20 border">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-amber-500/20 rounded-lg text-amber-600 dark:text-amber-400">
-              <Activity size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Active Services</p>
-              <h3 className="text-2xl font-bold">{stats.activeServices}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="glass rounded-xl overflow-hidden mt-8">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Recent Users</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800/50">
-                <th className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Name</th>
-                <th className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Email</th>
-                <th className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Role</th>
-                <th className="p-4 text-sm font-medium text-gray-500 dark:text-gray-400">Joined</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {recentUsers.map(user => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                  <td className="p-4 text-sm">{user.name}</td>
-                  <td className="p-4 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
-                  <td className="p-4 text-sm">
-                    <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                      user.role === 'ADMIN' ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400' :
-                      user.role === 'SELLER' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' :
-                      'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'
-                    }`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="p-4 text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-              {recentUsers.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500 dark:text-gray-400">
-                    No users found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+          <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors" />
+        </Card>
       </div>
     </div>
   );

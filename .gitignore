@@ -1,41 +1,9 @@
-# Maven
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# React
+/frontend/node_modules/
+/frontend/dist/
 
-# STS
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# IntelliJ IDEA
-.idea
-*.iws
-*.iml
-*.ipr
-
-# VS Code
-.vscode/
-
-# Eclipse
-.factorypath
-
-# macOS
-.DS_Store
-
-# Environment files (NEVER commit these)
 .env
-*.env
 
-# Logs
-*.log
-logs/
-
-# Local test overrides
-application-local.yml
-application-local.properties
+# Spring Boot
+/backend/localyze-backend/src/main/resources/application.yml
+/target/

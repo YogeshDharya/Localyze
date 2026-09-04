@@ -1,178 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { serviceService } from '../../services/serviceService';
-import { bookingService } from '../../services/bookingService';
-import { Activity, Book, Briefcase, CheckCircle, Clock } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Package, Calendar, DollarSign, Star, Plus, ArrowRight } from 'lucide-react';
+import serviceService from '../../services/serviceService';
+import bookingService from '../../services/bookingService';
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import Spinner from '../../components/ui/Spinner';
+import Badge from '../../components/ui/Badge';
+import { formatPrice, formatDate } from '../../utils/formatters';
+import { BOOKING_STATUS_COLORS } from '../../utils/constants';
 
-const SellerDashboard = () => {
-  const { user } = useAuth();
-  const [stats, setStats] = useState({
-    totalServices: 0,
-    totalBookings: 0,
-    pendingBookings: 0,
-    completedBookings: 0,
-  });
+export default function SellerDashboard() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({ services: 0, bookings: 0, revenue: 0, rating: 0 });
   const [recentBookings, setRecentBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetch = async () => {
       try {
-        setLoading(true);
-        // Fetch services
-        const servicesResponse = await serviceService.getByProvider(user.id, 0, 100);
-        const services = servicesResponse.data?.content || [];
-        
-        // Fetch bookings
-        const bookingsResponse = await bookingService.getMyAsProvider(0, 5);
-        const bookingsData = bookingsResponse.data?.content || [];
-        const allBookingsResponse = await bookingService.getMyAsProvider(0, 1000);
-        const allBookings = allBookingsResponse.data?.content || [];
-
+        const [svcRes, bkgRes] = await Promise.all([
+          serviceService.getMyServices({ page: 0, size: 100 }),
+          bookingService.getSellerBookings({ page: 0, size: 5 }),
+        ]);
+        const services = svcRes.data?.content || [];
+        const bookings = bkgRes.data?.content || [];
         setStats({
-          totalServices: services.length,
-          totalBookings: allBookings.length,
-          pendingBookings: allBookings.filter(b => b.status === 'PENDING').length,
-          completedBookings: allBookings.filter(b => b.status === 'COMPLETED').length,
+          services: svcRes.data?.totalElements || 0,
+          bookings: bkgRes.data?.totalElements || 0,
+          revenue: 0,
+          rating: services.length > 0 ? (services.reduce((sum, s) => sum + (s.avgRating || 0), 0) / services.length).toFixed(1) : 0,
         });
-
-        setRecentBookings(bookingsData);
-      } catch (err) {
-        toast.error('Failed to load dashboard data');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+        setRecentBookings(bookings);
+      } catch { /* */ }
+      finally { setLoading(false); }
     };
+    fetch();
+  }, []);
 
-    if (user?.id) {
-      fetchDashboardData();
-    }
-  }, [user]);
+  if (loading) return <div className="flex justify-center py-20"><Spinner size="xl" /></div>;
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>;
-  }
+  const statCards = [
+    { label: 'Total Services', value: stats.services, icon: Package, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Active Bookings', value: stats.bookings, icon: Calendar, color: 'from-purple-500 to-pink-500' },
+    { label: 'Avg Rating', value: stats.rating + '★', icon: Star, color: 'from-amber-500 to-orange-500' },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+      <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Seller Dashboard</h1>
-        <div className="space-x-3">
-          <Link to="/seller/services" className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-            Manage Services
-          </Link>
-          <Link to="/seller/services/new" className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-            Add New Service
-          </Link>
-        </div>
+        <Button icon={Plus} onClick={() => navigate('/seller/services/new')}>Add Service</Button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Services</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.totalServices}</p>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        {statCards.map(s => (
+          <div key={s.label} className="glass-card flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center`}>
+              <s.icon className="w-6 h-6 text-white" />
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-800/50 rounded-full">
-              <Briefcase className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.value}</p>
+              <p className="text-sm text-gray-500">{s.label}</p>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Bookings</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.totalBookings}</p>
-            </div>
-            <div className="p-3 bg-green-100 dark:bg-green-800/50 rounded-full">
-              <Book className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
+      {/* Quick actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <Card onClick={() => navigate('/seller/services')} className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Package className="w-5 h-5 text-blue-500" />
+            <span className="font-medium text-gray-900 dark:text-white">My Services</span>
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Pending</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.pendingBookings}</p>
-            </div>
-            <div className="p-3 bg-amber-100 dark:bg-amber-800/50 rounded-full">
-              <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-            </div>
+          <ArrowRight className="w-5 h-5 text-gray-400" />
+        </Card>
+        <Card onClick={() => navigate('/seller/bookings')} className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Calendar className="w-5 h-5 text-purple-500" />
+            <span className="font-medium text-gray-900 dark:text-white">View Bookings</span>
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-6 bg-gradient-to-br from-purple-50 to-fuchsia-100 dark:from-purple-900/20 dark:to-fuchsia-900/20 border border-purple-200 dark:border-purple-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Completed</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stats.completedBookings}</p>
-            </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-800/50 rounded-full">
-              <CheckCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-          </div>
-        </div>
+          <ArrowRight className="w-5 h-5 text-gray-400" />
+        </Card>
       </div>
 
       {/* Recent Bookings */}
-      <div className="glass rounded-xl p-6 border border-gray-200 dark:border-gray-800">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-            <Activity className="w-5 h-5 mr-2 text-primary-500" />
-            Recent Bookings
-          </h2>
-          <Link to="/seller/bookings" className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400">
-            View All
-          </Link>
-        </div>
-
+      <div className="glass-card">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Bookings</h3>
         {recentBookings.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No recent bookings found.
-          </div>
+          <p className="text-gray-500 text-center py-4">No bookings yet</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Service</th>
-                  <th className="py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Customer</th>
-                  <th className="py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Date</th>
-                  <th className="py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentBookings.map((booking) => (
-                  <tr key={booking.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                    <td className="py-3 px-4 text-gray-800 dark:text-gray-200">{booking.serviceTitle}</td>
-                    <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{booking.customerName}</td>
-                    <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{new Date(booking.scheduledAt).toLocaleString()}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-                        booking.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                        booking.status === 'PENDING' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
-                        booking.status === 'CONFIRMED' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                      }`}>
-                        {booking.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {recentBookings.map(b => (
+              <div key={b.id} className="flex items-center justify-between p-3 rounded-xl bg-white/10 dark:bg-slate-700/20">
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">{b.serviceTitle}</p>
+                  <p className="text-sm text-gray-500">{b.userName} • {formatDate(b.bookingDate)}</p>
+                </div>
+                <Badge variant={BOOKING_STATUS_COLORS[b.status]}>{b.status}</Badge>
+              </div>
+            ))}
           </div>
         )}
       </div>
     </div>
   );
-};
-
-export default SellerDashboard;
+}
